@@ -1,5 +1,4 @@
 "use client"
-// pages/login.tsx (assuming TypeScript)
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
@@ -124,7 +123,7 @@ const LoginForm = (): React.ReactNode => {
                     </button>
                 </div>
                 <div className='flex flex-col gap-2'>
-                    <p>Don't have an account? <Link href={"/register"} className='text-green-600 font-semibold'>Create account</Link></p>
+                    <p>Do not have an account? <Link href={"/register"} className='text-green-600 font-semibold'>Create account</Link></p>
                     <p>Forgot your password? <Link href={"/forget-password"} className='text-green-600 font-semibold'>Reset here</Link></p>
                 </div>
             </div>
