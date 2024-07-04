@@ -186,6 +186,10 @@ const Details: React.FC<DetailsProps> = ({ islogged, walletBalance, getWalletBal
               </div>
               {inputError && <p className="text-red-500 mt-1">{inputError}</p>}
             </div>
+
+            <div>
+              <button className='w-full rounded-lg bg-green-600 text-white py-2 mt-5' >Buy</button>
+            </div>
           </div>
         </div>
       </div>

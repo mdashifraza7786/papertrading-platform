@@ -17,9 +17,9 @@ const Stocks = ({ data }: { data: CryptoData[] }) => {
             <h1 className="text-black font-medium text-2xl tracking-widest">Stocks</h1>
             <div className="grid grid-cols-3 gap-5">
                 {data.map(crypto => (
-                    <Link href={"/market/"+crypto.name.replace("USDT","")}>
+                    <Link key={crypto.id} href={"/market/"+crypto.name.replace("USDT","")}>
                         <StocksCard
-                            key={crypto.id}
+                            
                             name={crypto.name}
                             price={crypto.price}
                             change={crypto.change}
