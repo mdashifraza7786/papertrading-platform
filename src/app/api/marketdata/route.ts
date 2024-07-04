@@ -6,6 +6,7 @@ export async function POST(request:Request){
     try {
         const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${symbol}&interval=${interval}&limit=19999000000`);
         if (!response.ok) {
+          console.log(response);
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
