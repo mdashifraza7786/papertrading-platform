@@ -59,7 +59,13 @@ const Details: React.FC = () => {
 
     const fetchChartData = async () => {
       try {
-        const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=BTCUSDT&interval=1m&limit=19999000000`);
+        const response = await fetch('/api/marketdata', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ symbol: forhistory, interval: "1m" }),
+        });
     
         if (!response.ok) {
           console.log(response)
