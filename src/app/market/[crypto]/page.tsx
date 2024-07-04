@@ -59,14 +59,25 @@ const Details: React.FC = () => {
 
     const fetchChartData = async () => {
       try {
-        const response = await axios.post('/api/marketdata', { symbol: forhistory, interval: "1m" });
+        const response = await fetch('/api/marketdata', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ symbol: forhistory, interval: "1m" }),
+        });
     
-        if (!Array.isArray(response.data)) {
-          console.log(response)
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+    
+        const responseData = await response.json();
+    
+        if (!Array.isArray(responseData)) {
           throw new Error('Expected an array in response, but received something else.');
         }
     
-        const cdata: CandlestickData[] = response.data.map((d: number[]) => ({
+        const cdata: CandlestickData[] = responseData.map((d: number[]) => ({
           time: convertToIST(Math.round(d[0] / 1000)) as Time,
           open: Number(d[1]),
           high: Number(d[2]),
@@ -79,9 +90,10 @@ const Details: React.FC = () => {
     
       } catch (error) {
         console.error('Error fetching historical data:', error);
-        // Handle the error state or display an error message to the user
+        // Handle error state, e.g., setLoaded(false) or display an error message
       }
     };
+    
     
 
     fetchChartData();
