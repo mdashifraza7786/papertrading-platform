@@ -1,16 +1,23 @@
-import mongoose from 'mongoose';
+import mongoose, { Schema, Document, Model } from 'mongoose';
 
-// Define the user schema
-const UserSchema = new mongoose.Schema({
-    name: String,
-    email: String,
-    password: String,
+// Define the interface for User document
+export interface UserDocument extends Document {
+    name: string;
+    email: string;
+    password: string;
+    balance: number;
+}
+
+// Define the schema for the User model
+const UserSchema: Schema<UserDocument> = new Schema({
+    name: { type: String, required: true },
+    email: { type: String, required: true, unique: true },
+    password: { type: String, required: true },
+    balance: { type: Number, default: 10000 }
 });
 
-// Create the user model based on the schema
-export const UserModel = mongoose.models.User || mongoose.model('User', UserSchema);
-
-
+// Create the User model based on the schema
+export const UserModel: Model<UserDocument> = mongoose.models.User || mongoose.model<UserDocument>('User', UserSchema);
 
 
 export const getUserByEmail = async (email: string): Promise<any | null> => {

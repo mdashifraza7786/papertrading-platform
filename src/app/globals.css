@@ -7,3 +7,31 @@
   }
 }
 
+.pagetitle{
+  display: inline-block;
+  padding: 10px 0;
+  font-size: 1.7rem;
+  @apply font-semibold;
+  @apply uppercase;
+  @apply tracking-widest;
+}
+.pagetitle::after{
+  content: '';
+  display: block;
+  width: 70%;
+  height: 3px;
+  @apply bg-green-600;
+}
+
+
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+/* Firefox */
+input[type=number] {
+  -moz-appearance: textfield;
+}

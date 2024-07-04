@@ -1,18 +1,25 @@
 "use client"
 import Link from "next/link"
 import NextTopLoader from "nextjs-toploader"
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+
+const predefinedCryptoList = [
+    { "id": 1, "name": "Bitcoin", "symbol": "BTC" },
+    { "id": 2, "name": "Ethereum", "symbol": "ETH" },
+    { "id": 3, "name": "Ripple", "symbol": "XRP" },
+    { "id": 4, "name": "Litecoin", "symbol": "LTC" },
+    { "id": 5, "name": "Cardano", "symbol": "ADA" },
+    // Add more predefined cryptocurrencies as needed
+];
+
 const Header = ({ sess }: any) => {
     const [loggedin, setLoggedin] = useState<boolean>(false);
-    const router = useRouter();
+    const [searchTerm, setSearchTerm] = useState<string>('');
+    const [searchResults, setSearchResults] = useState<{ id: number; name: string; symbol: string; }[]>([]);
+    const [inputFocused, setInputFocused] = useState<boolean>(false);
     const pathname = usePathname();
-    if (!sess?.user && pathname !== "/" && pathname !== "/login" && pathname !== "/register") {
-        router.push("/login");
-    }else if(sess?.user){
-        router.push("/dashboard");
-    }
-    
+
     useEffect(() => {
         if (sess?.user) {
             setLoggedin(true);
@@ -20,6 +27,32 @@ const Header = ({ sess }: any) => {
             setLoggedin(false);
         }
     }, [sess?.user, pathname])
+
+    const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+        const { value } = event.target;
+        setSearchTerm(value);
+
+        const filteredResults = predefinedCryptoList.filter(crypto =>
+            crypto.name.toLowerCase().includes(value.toLowerCase()) ||
+            crypto.symbol.toLowerCase().includes(value.toLowerCase())
+        );
+
+        setSearchResults(filteredResults);
+    };
+
+    const handleInputFocus = () => {
+        setInputFocused(true);
+    };
+
+    const handleInputBlur = () => {
+        setTimeout(()=>{
+            setInputFocused(false);
+        },100)
+    };
+
+    useEffect(()=>{
+        setInputFocused(false);
+    },[pathname])
     return (
         <>
             <NextTopLoader color="#16A34A" />
@@ -30,6 +63,45 @@ const Header = ({ sess }: any) => {
                             PAPERTRADING
                         </h1>
                     </Link>
+                </div>
+                <div>
+                    <form action="" autoComplete="off">
+                    <input
+                        type="text"
+                        name="search"
+                        id="search"
+                        className="border-[2px] border-gray-200 outline-0 h-[2.5rem] rounded-lg w-[30rem] py-1 px-2"
+                        placeholder="What are you looking for today?"
+                        onChange={handleSearchChange}
+                        onFocus={handleInputFocus}
+                        onBlur={handleInputBlur}
+                        value={searchTerm}
+                    /></form>
+                    {inputFocused && searchTerm.trim() === '' && (
+                        <>
+                        <div className="absolute mt-2 w-[30rem] bg-white shadow-md rounded-lg bg-op">
+                            {predefinedCryptoList.map(crypto => (
+                                <Link key={crypto.id} href={`/market/${crypto.symbol}`}>
+                                    <div className="py-2 px-3 hover:bg-black hover:text-white cursor-pointer flex justify-between">
+                                        <p>{crypto.name}</p> <p>({crypto.symbol})</p>
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                        
+                        </>
+                    )}
+                    {searchTerm.trim() !== '' && (
+                        <div className="absolute mt-2 w-[30rem] bg-white shadow-md rounded-lg">
+                            {searchResults.map(result => (
+                                <Link key={result.id} href={`/market/${result.symbol}`}>
+                                    <div className="py-2 px-3 hover:bg-black hover:text-white cursor-pointer">
+                                        {result.name} ({result.symbol})
+                                    </div>
+                                </Link>
+                            ))}
+                        </div>
+                    )}
                 </div>
                 <div>
                     <ul className="flex gap-5 font-medium">
@@ -58,13 +130,11 @@ const Header = ({ sess }: any) => {
                                 </Link>
                             </>
                         )}
-
                     </ul>
                 </div>
             </div>
         </>
-
     )
 }
 
-export default Header
+export default Header;

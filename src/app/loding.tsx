@@ -3,7 +3,7 @@ import { ThreeDots } from "react-loader-spinner"
 
 const Loader = () => {
     return (
-        <div className="abosolute left-0 top-0 w-full h-[75vh] flex justify-center items-center">
+        <div className="abosolute left-0 top-0 w-full h-[65vh] flex justify-center items-center">
 
             <ThreeDots
                 visible={true}

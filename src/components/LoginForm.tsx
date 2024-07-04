@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 const LoginForm = (): React.ReactNode => {
     const [emailcheck, setEmailcheck] = useState('');
     const [passwordcheck, setPasswordcheck] = useState('');
-    const [loading, setLoading] = useState(false); // State to manage loading indicator
+    const [loading, setLoading] = useState(false); 
 
     const router = useRouter();
 
@@ -59,7 +59,7 @@ const LoginForm = (): React.ReactNode => {
             console.error('Error logging in:', error);
             toast.error(error.message || 'Failed to login');
         } finally {
-            setLoading(false); // Stop showing loading indicator after login attempt
+            setLoading(false); 
         }
     };
 
