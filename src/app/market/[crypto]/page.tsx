@@ -61,12 +61,13 @@ const Details: React.FC = () => {
       try {
         const response = await axios.post('/api/marketdata', { symbol: forhistory, interval: "1m" });
         const cdata: CandlestickData[] = response.data.map((d: number[]) => ({
-          time: convertToIST(Math.round(d[0] / 1000)), // Ensure time is assigned correctly
-          open: parseFloat(d[1]),
-          high: parseFloat(d[2]),
-          low: parseFloat(d[3]),
-          close: parseFloat(d[4]),
+          time: convertToIST(Math.round(d[0] / 1000)) as Time,
+          open: Number(d[1]),
+          high: Number(d[2]),
+          low: Number(d[3]),
+          close: Number(d[4]),
         }));
+
         setLoaded(true);
 
         candleSeries.setData(cdata);
@@ -122,7 +123,7 @@ const Details: React.FC = () => {
     }
   }, [price, quantity]);
 
-  
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuantity = parseFloat(e.target.value);
