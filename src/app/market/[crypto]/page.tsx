@@ -60,6 +60,12 @@ const Details: React.FC = () => {
     const fetchChartData = async () => {
       try {
         const response = await axios.post('/api/marketdata', { symbol: forhistory, interval: "1m" });
+    
+        if (!Array.isArray(response.data)) {
+          console.log(response)
+          throw new Error('Expected an array in response, but received something else.');
+        }
+    
         const cdata: CandlestickData[] = response.data.map((d: number[]) => ({
           time: convertToIST(Math.round(d[0] / 1000)) as Time,
           open: Number(d[1]),
@@ -67,15 +73,16 @@ const Details: React.FC = () => {
           low: Number(d[3]),
           close: Number(d[4]),
         }));
-
+    
         setLoaded(true);
-
         candleSeries.setData(cdata);
-
+    
       } catch (error) {
         console.error('Error fetching historical data:', error);
+        // Handle the error state or display an error message to the user
       }
     };
+    
 
     fetchChartData();
 
