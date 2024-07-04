@@ -6,11 +6,7 @@ import { useParams } from 'next/navigation';
 import Loader from '@/app/loding';
 import { getCryptoName } from '@/util/getCryptoName';
 
-interface DetailsProps {
-  islogged: boolean;
-  walletBalance: number;
-  getWalletBalance: () => void;
-}
+
 
 interface CandlestickData {
   time: Time;
@@ -20,7 +16,7 @@ interface CandlestickData {
   close: number;
 }
 
-const Details: React.FC<DetailsProps> = ({ islogged, walletBalance, getWalletBalance }) => {
+const Details: React.FC = () => {
   const { crypto } = useParams();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [price, setPrice] = useState<number>(0);
@@ -126,27 +122,7 @@ const Details: React.FC<DetailsProps> = ({ islogged, walletBalance, getWalletBal
     }
   }, [price, quantity]);
 
-  const handlePay = () => {
-    if (quantity <= 0) {
-      setInputError('Quantity should be greater than zero');
-      return;
-    }
-
-    if (price * quantity > 10000) {
-      setInputError('Insufficient balance');
-      return;
-    }
-
-    axios.post('/api/pay', { quantity, payable })
-      .then(response => {
-        if (response.data.success) {
-          getWalletBalance();
-        }
-      })
-      .catch(error => {
-        console.error('Error making payment:', error);
-      });
-  };
+  
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuantity = parseFloat(e.target.value);
