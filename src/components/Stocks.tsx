@@ -1,6 +1,7 @@
 import { Suspense } from "react";
 import Loader from "@/app/loding";
 import Link from "next/link";
+import { getCryptoName } from "@/util/getCryptoName";
 
 export interface CryptoData {
     id: number;
@@ -41,8 +42,8 @@ interface StocksCardProps {
 
 function StocksCard({ name, price, change }: StocksCardProps) {
     return (
-        <div className="px-5 py-3 bg-white shadow-[0_0_3px_1px_#ddd] flex flex-col gap-5 rounded-lg">
-            <h1 className="uppercase text-lg tracking-wider font-semibold">{name}</h1>
+        <div className="px-5 py-3 bg-white shadow-[0_0_3px_1px_#ddd] flex flex-col gap-5 rounded-lg hover:shadow-[0_0_10px_1px_#ddd] transition-all duration-300">
+            <h1 className="uppercase text-lg tracking-wider font-semibold">{getCryptoName(name.replace("USDT",""))}</h1>
             <div className="flex justify-between">
                 <p>{price !== null ? price : 'Price not available'}</p>
                 {change && <p>{change}</p>}

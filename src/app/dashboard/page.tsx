@@ -4,6 +4,7 @@ import Loader from "@/app/loding";
 import HoldingStock from "@/components/HoldingStock";
 import Stocks, { CryptoData as StocksCryptoData } from "@/components/Stocks";
 import { usePathname } from "next/navigation";
+import axios from "axios";
 
 export interface CryptoData {
     id: number;
@@ -15,6 +16,7 @@ export interface CryptoData {
 
 const Dashboard = () => {
     const [cryptoData, setCryptoData] = useState<Map<string, CryptoData>>(new Map());
+    const [holdingsData, setHoldingsData] = useState<any[]>([]);
     const [loaded, setLoaded] = useState<boolean>(false);
     const paths = usePathname()
     useEffect(() => {
@@ -41,7 +43,6 @@ const Dashboard = () => {
 
         ws.onmessage = (event) => {
             const message = JSON.parse(event.data);
-            console.log('WebSocket message:', message);
 
             if (message && message.k && message.k.c) {
                 const symbol = message.s.toLowerCase();
@@ -76,11 +77,26 @@ const Dashboard = () => {
             console.error('WebSocket error:', error);
         };
 
+        
+
         return () => {
             ws.close();
         };
     }, []);
+    useEffect(() => {
+        const fetchHoldings = async () => {
+            try {
+                const response = await axios.get("/api/getHoldings");
+                setHoldingsData(response.data);
+            } catch (error) {
+                console.error("Error fetching holdings:", error);
+            }
+        };
 
+        fetchHoldings();
+        
+    }, []);
+   
     const cryptoDataArray: CryptoData[] = Array.from(cryptoData.values());
 
 
@@ -91,7 +107,7 @@ const Dashboard = () => {
                 <div className="col-span-3 mt-10 flex flex-col gap-10">
                     {loaded ? (
                         <>
-                            <HoldingStock />
+                             <HoldingStock holdingsData={holdingsData} cryptoData={cryptoDataArray} />
                             <Stocks data={cryptoDataArray as StocksCryptoData[]} />
                         </>
                     ):(

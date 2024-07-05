@@ -38,3 +38,24 @@ export const getBalanceByEmail = async (email: string): Promise<any | null> => {
     }
 };
 
+export const updateWalletBalance = async (email: string, tominus: number): Promise<boolean> => {
+    try {
+        
+        const user = await UserModel.findOne({ email }).exec();
+        if (!user) {
+            throw new Error(`User not found with email: ${email}`);
+        }
+
+        
+        if (user.balance >= tominus) {
+            user.balance -= tominus;
+            await user.save();
+            return true; 
+        } else {
+            throw new Error('Insufficient balance');
+        }
+    } catch (error) {
+        console.error('Error updating balance:', error);
+        return false; 
+    }
+};
