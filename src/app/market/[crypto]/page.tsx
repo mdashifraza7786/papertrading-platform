@@ -6,6 +6,7 @@ import { useParams } from 'next/navigation';
 import Loader from '@/app/loding';
 import { getCryptoName } from '@/util/getCryptoName';
 import { ToastContainer, toast } from 'react-toastify';
+import { ThreeDots } from 'react-loader-spinner';
 
 interface CandlestickData {
   time: Time;
@@ -24,17 +25,19 @@ const Details: React.FC = () => {
   const [loaded, setLoaded] = useState<boolean>(false);
   const [inputError, setInputError] = useState<string>('');
   const [walletData, setWalletData] = useState<number>(0)
+  const [loading, setLoading] = useState(false);
+
   const changeQuantity = (increment: boolean) => {
     if (increment) {
-      if(typeof quantity !== 'number'){
+      if (typeof quantity !== 'number') {
         setQuantity(0.1);
-      }else{
+      } else {
         setQuantity(prevQuantity => Number((prevQuantity as number + 0.1).toFixed(2)));
       }
     } else {
-      if(typeof quantity !== 'number'){
+      if (typeof quantity !== 'number') {
         setQuantity(0.1);
-      }else if (typeof quantity == 'number' && quantity > 0.01) {
+      } else if (typeof quantity == 'number' && quantity > 0.01) {
         setQuantity(prevQuantity => Number((prevQuantity as number - 0.1).toFixed(2)));
       }
     }
@@ -155,22 +158,26 @@ const Details: React.FC = () => {
     if (!isNaN(newQuantity)) {
       setQuantity(newQuantity);
     } else {
-      setQuantity(''); 
+      setQuantity('');
     }
   };
 
   const BuyNowHandle = async () => {
-    if(payable < 0){
+    setLoading(true);
+    if (payable < 0) {
+      setLoading(false);
+
       toast.error("Insufficient Wallet Balance");
       return;
     }
     try {
-      const response = await axios.post('/api/buyStock',{
+      const response = await axios.post('/api/buyStock', {
         quantity: quantity,
         price: price.toFixed(3),
         symbol: crypto
       });
       setWalletData(response.data);
+      setLoading(false);
 
 
     } catch (error) {
@@ -181,12 +188,12 @@ const Details: React.FC = () => {
   return (
     <>
       {!loaded && (
-        <div className='absolute fixed w-screen h-[89vh] left-0 bottom-0 bg-white backdrop-blur-xl z-50'>
+        <div className='absolute  w-screen h-[89vh] left-0 bottom-0 bg-white backdrop-blur-xl z-50'>
           <Loader />
         </div>
       )}
       <div className='mb-10 '>
-        <h1 className='text-3xl font-semibold'>{getCryptoName(crypto as string) } ({crypto})</h1>
+        <h1 className='text-3xl font-semibold'>{getCryptoName(crypto as string)} ({crypto})</h1>
       </div>
       <div className='flex justify-between gap-10'>
         <div id="chart-container" className='w-[75%] border-2 overflow-hidden rounded-lg -z-d10 border-primary flex justify-center items-center'>
@@ -212,19 +219,33 @@ const Details: React.FC = () => {
             </div>
 
             <div className='absolute bottom-5 left-0 w-full'>
-              <div className='bg-gray-300 h-[1.5px] my-2 w-full absolute left-0 bottom-20'></div>
-              <div className='flex w-[100%] justify-between text-sm px-6'>
+              <div className='flex w-[100%] justify-between text-[12px] px-6'>
                 <p className='font-semibold text-gray-700'>Balance: ${walletData.toFixed(3)}</p>
                 <p className='font-semibold text-gray-700 '>Required: ${(price * Number(quantity)).toFixed(3)}</p>
               </div>
               <div className='flex justify-center items-center' >
-                <button onClick={BuyNowHandle} className={`w-[88%] rounded-lg bg-green-600 hover:bg-green-700 text-white py-2 mt-5 ${quantity as number > 0 && payable < walletData ? "" : "disabled:cursor-not-allowed disabled:bg-green-400 disabled:text-gray-200"}`} disabled={quantity as number > 0 && payable < walletData ? false : true}>Buy</button>
+                <button onClick={BuyNowHandle} className={`w-[88%] flex justify-center items-center rounded-lg bg-green-600 hover:bg-green-700 text-white py-2 mt-5 ${quantity as number > 0 && payable < walletData ? "" : "disabled:cursor-not-allowed disabled:bg-green-400 disabled:text-gray-200"}`} disabled={quantity as number > 0 && payable < walletData ? false : true}>
+                  {loading ? (
+                    <ThreeDots
+                      visible={true}
+                      height={23}
+                      width={50}
+                      color="#ffffff"
+                      radius="3"
+                      ariaLabel="three-dots-loading"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                    />
+                  ) : (
+                    'Buy'
+                  )}
+                </button>
               </div>
             </div>
           </div>
         </div>
       </div>
-      <ToastContainer/>
+      <ToastContainer />
     </>
   );
 };

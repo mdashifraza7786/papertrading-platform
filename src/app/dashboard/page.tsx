@@ -114,7 +114,7 @@ const Dashboard = () => {
     const calculateCurrentValue = () => {
         let currentValue = 0;
         holdingsData.forEach(holding => {
-            const symbol = holding.symbol.toUpperCase()+"usdt";
+            const symbol = holding.symbol.toUpperCase() + "usdt";
             const crypto = cryptoData.get(symbol.toLowerCase());
             if (crypto) {
                 const price = parseFloat(crypto.price as string);
@@ -142,6 +142,8 @@ const Dashboard = () => {
                     )}
                 </div>
                 <div className="w-[100%] col-span-2 pl-20">
+                    <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Your Investment</h1>
+
                     <div className="flex justify-between bg-white shadow-[0_0_3px_1px_#ddd] w-[100%] py-5 px-5 rounded-lg">
                         <div className="flex flex-col gap-2">
                             <h2 className="text-2xl font-semibold">${calculateTotalInvestment()}</h2>

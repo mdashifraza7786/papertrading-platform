@@ -35,3 +35,23 @@ input::-webkit-inner-spin-button {
 input[type=number] {
   -moz-appearance: textfield;
 }
+
+.swticher{
+  @apply text-center;
+  @apply font-semibold;
+  @apply uppercase;
+  @apply tracking-widest;
+}
+.swticher_not_applied{
+  @apply text-center;
+  @apply font-semibold;
+  @apply uppercase;
+  @apply tracking-widest;
+}
+.swticher::after{
+  content: '';
+  display: block;
+  width: 100%;
+  height: 3px;
+  @apply bg-green-600;
+}
