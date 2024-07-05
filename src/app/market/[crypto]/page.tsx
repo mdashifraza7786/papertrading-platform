@@ -185,6 +185,9 @@ const Details: React.FC = () => {
           <Loader />
         </div>
       )}
+      <div className='mb-10 '>
+        <h1 className='text-3xl font-semibold'>{getCryptoName(crypto as string) } ({crypto})</h1>
+      </div>
       <div className='flex justify-between gap-10'>
         <div id="chart-container" className='w-[75%] border-2 overflow-hidden rounded-lg -z-d10 border-primary flex justify-center items-center'>
           <div ref={chartContainerRef} style={{ width: '100%', height: '35.8rem' }} />

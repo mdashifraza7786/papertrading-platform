@@ -31,7 +31,6 @@ interface Props {
 }
 
 const HoldingCard: React.FC<Props> = ({ holding, cryptoData }) => {
-    console.log(cryptoData)
     const symbol = holding.symbol.toLowerCase()+"usdt";
     const totalPrice = parseFloat(holding.totalPrice["$numberDecimal"]);
     const totalQuantity = parseFloat(holding.totalQuantity["$numberDecimal"]);
