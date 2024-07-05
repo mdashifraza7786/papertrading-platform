@@ -6,8 +6,6 @@ import { useParams } from 'next/navigation';
 import Loader from '@/app/loding';
 import { getCryptoName } from '@/util/getCryptoName';
 
-
-
 interface CandlestickData {
   time: Time;
   open: number;
@@ -20,17 +18,17 @@ const Details: React.FC = () => {
   const { crypto } = useParams();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [price, setPrice] = useState<number>(0);
-  const [quantity, setQuantity] = useState<number>(0.01);
+  const [quantity, setQuantity] = useState<number | string>(0.01); // Allow quantity to be a string to handle empty input
   const [payable, setPayable] = useState<number>(0);
   const [loaded, setLoaded] = useState<boolean>(false);
   const [inputError, setInputError] = useState<string>('');
-
+  const [walletData, setWalletData] = useState<number>(0)
   const changeQuantity = (increment: boolean) => {
     if (increment) {
-      setQuantity(prevQuantity => prevQuantity + 0.01); // Increase by 0.01 (or any other increment)
+      setQuantity(prevQuantity => Number((prevQuantity as number + 0.1).toFixed(2)));
     } else {
-      if (quantity > 0.02) {
-        setQuantity(prevQuantity => prevQuantity - 0.01); // Decrease by 0.01 (or any other decrement), ensure quantity doesn't go below 0
+      if (typeof quantity === 'number' && quantity > 0.01) {
+        setQuantity(prevQuantity => Number((prevQuantity as number - 0.1).toFixed(2)));
       }
     }
   };
@@ -56,22 +54,34 @@ const Details: React.FC = () => {
       date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
       return date.getTime();
     };
+    const fetchWalletData = async () => {
+      try {
+        const response = await axios.get('/api/getWallet');
+        setWalletData(response.data);
+      setLoaded(true);
+
+      } catch (error) {
+        console.error('Error fetching wallet data:', error);
+      }
+    };
+
+    fetchWalletData();
 
     const fetchChartData = async () => {
       try {
         const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${forhistory}&interval=1m&limit=19999000000`);
-    
+
         if (!response.ok) {
           console.log(response)
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
-    
+
         const responseData = await response.json();
-    
+
         if (!Array.isArray(responseData)) {
           throw new Error('Expected an array in response, but received something else.');
         }
-    
+
         const cdata: CandlestickData[] = responseData.map((d: number[]) => ({
           time: convertToIST(Math.round(d[0] / 1000)) as Time,
           open: Number(d[1]),
@@ -79,17 +89,14 @@ const Details: React.FC = () => {
           low: Number(d[3]),
           close: Number(d[4]),
         }));
-    
+
         setLoaded(true);
         candleSeries.setData(cdata);
-    
+
       } catch (error) {
         console.error('Error fetching historical data:', error);
-        // Handle error state, e.g., setLoaded(false) or display an error message
       }
     };
-    
-    
 
     fetchChartData();
 
@@ -97,7 +104,6 @@ const Details: React.FC = () => {
     const ws = new WebSocket(wsURL);
 
     ws.onopen = () => {
-      setLoaded(true);
     };
 
     ws.onmessage = (event) => {
@@ -129,22 +135,20 @@ const Details: React.FC = () => {
   }, [crypto]);
 
   useEffect(() => {
-    setPayable(price * quantity);
-    if (price * quantity > 10000) {
+    setPayable(price * (typeof quantity === 'number' ? quantity : 0));
+    if (price * (typeof quantity === 'number' ? quantity : 0) > walletData) {
       setInputError('Insufficient balance');
     } else {
       setInputError('');
     }
   }, [price, quantity]);
 
-
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuantity = parseFloat(e.target.value);
     if (!isNaN(newQuantity)) {
       setQuantity(newQuantity);
     } else {
-      setQuantity(0);
+      setQuantity(''); // Set quantity to empty string if input is not a valid number
     }
   };
 
@@ -166,20 +170,27 @@ const Details: React.FC = () => {
               <h3 className='text-sm'>${price.toFixed(2)}</h3>
               <div className='bg-gray-300 h-[1.5px] my-2 w-full absolute left-0'></div>
               <div className='mt-10 flex gap-5'>
-                <button className='rounded-lg w-[40px] h-[40px] text-3xl flex justify-center items-center bg-green-600 text-white' onClick={() => changeQuantity(false)}>-</button>
+                <button className='rounded-lg w-[40px] h-[40px] text-3xl hover:bg-green-700 flex justify-center items-center bg-green-600 text-white' onClick={() => changeQuantity(false)}>-</button>
                 <input
                   type="number"
-                  value={quantity === 0 ? '' : quantity.toFixed(2)}
                   onChange={handleInputChange}
+                  value={quantity}
                   className={`w-[65%] rounded-lg text-xl text-center outline-none ${inputError ? 'border-[1.5px] border-red-500' : ' border-[1.5px] border-gray-400'}`}
                 />
-                <button className='rounded-lg w-[40px] h-[40px] text-3xl flex justify-center items-center bg-green-600 text-white' onClick={() => changeQuantity(true)}>+</button>
+                <button className='rounded-lg w-[40px] h-[40px] text-3xl hover:bg-green-700 flex justify-center items-center bg-green-600 text-white' onClick={() => changeQuantity(true)}>+</button>
               </div>
               {inputError && <p className="text-red-500 mt-1">{inputError}</p>}
             </div>
 
-            <div>
-              <button className='w-full rounded-lg bg-green-600 text-white py-2 mt-5' >Buy</button>
+            <div className='absolute bottom-5 left-0 w-full'>
+              <div className='bg-gray-300 h-[1.5px] my-2 w-full absolute left-0 bottom-20'></div>
+              <div className='flex w-[100%] justify-between text-sm px-6'>
+                <p className='font-semibold text-gray-700'>Balance: ${walletData}</p>
+                <p className='font-semibold text-gray-700'>Required: ${(price * Number(quantity)).toFixed(4)}</p>
+              </div>
+              <div className='flex justify-center items-center' >
+                <button className={`w-[88%] rounded-lg bg-green-600 hover:bg-green-700 text-white py-2 mt-5 ${quantity as number > 0 && payable < walletData ? "" : "disabled:cursor-not-allowed disabled:bg-green-400 disabled:text-gray-200"}`} disabled={quantity as number > 0 && payable < walletData ? false : true}>Buy</button>
+              </div>
             </div>
           </div>
         </div>

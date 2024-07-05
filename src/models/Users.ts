@@ -28,3 +28,13 @@ export const getUserByEmail = async (email: string): Promise<any | null> => {
         return null;
     }
 };
+
+export const getBalanceByEmail = async (email: string): Promise<any | null> => {
+    try {
+        return await UserModel.findOne({ email }).exec();
+    } catch (error) {
+        console.error('Error fetching user by email:', error);
+        return null;
+    }
+};
+
