@@ -58,7 +58,7 @@ const Details: React.FC = () => {
       try {
         const response = await axios.get('/api/getWallet');
         setWalletData(response.data);
-      setLoaded(true);
+        setLoaded(true);
 
       } catch (error) {
         console.error('Error fetching wallet data:', error);
@@ -90,7 +90,7 @@ const Details: React.FC = () => {
           close: Number(d[4]),
         }));
 
-        setLoaded(true);
+        // setLoaded(true);
         candleSeries.setData(cdata);
 
       } catch (error) {
