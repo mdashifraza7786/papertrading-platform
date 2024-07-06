@@ -3,6 +3,7 @@ import Link from "next/link"
 import NextTopLoader from "nextjs-toploader"
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 
 const predefinedCryptoList = [
     { "id": 1, "name": "Bitcoin", "symbol": "BTC" },
@@ -19,6 +20,13 @@ const Header = ({ sess }: any) => {
     const [searchResults, setSearchResults] = useState<{ id: number; name: string; symbol: string; }[]>([]);
     const [inputFocused, setInputFocused] = useState<boolean>(false);
     const pathname = usePathname();
+    const router = useRouter();
+
+    if (!sess?.user?.email) {
+        if (pathname !== "/login" && pathname !== "/register" && pathname !== "/logout") {
+            router.refresh();
+        }
+    }
 
     useEffect(() => {
         if (sess?.user) {
@@ -45,14 +53,14 @@ const Header = ({ sess }: any) => {
     };
 
     const handleInputBlur = () => {
-        setTimeout(()=>{
+        setTimeout(() => {
             setInputFocused(false);
-        },100)
+        }, 100)
     };
 
-    useEffect(()=>{
+    useEffect(() => {
         setInputFocused(false);
-    },[pathname])
+    }, [pathname])
     return (
         <>
             <NextTopLoader color="#16A34A" />
@@ -65,30 +73,35 @@ const Header = ({ sess }: any) => {
                     </Link>
                 </div>
                 <div>
-                    <form action="" autoComplete="off">
-                    <input
-                        type="text"
-                        name="search"
-                        id="search"
-                        className="border-[2px] border-gray-200 outline-0 h-[2.5rem] rounded-lg w-[30rem] py-1 px-2"
-                        placeholder="What are you looking for today?"
-                        onChange={handleSearchChange}
-                        onFocus={handleInputFocus}
-                        onBlur={handleInputBlur}
-                        value={searchTerm}
-                    /></form>
+                    {sess?.user?.email && (
+
+
+                        <form action="" autoComplete="off">
+                            <input
+                                type="text"
+                                name="search"
+                                id="search"
+                                className="border-[2px] border-gray-200 outline-0 h-[2.5rem] rounded-lg w-[30rem] py-1 px-2"
+                                placeholder="What are you looking for today?"
+                                onChange={handleSearchChange}
+                                onFocus={handleInputFocus}
+                                onBlur={handleInputBlur}
+                                value={searchTerm}
+                            />
+                        </form>
+                    )}
                     {inputFocused && searchTerm.trim() === '' && (
                         <>
-                        <div className="absolute mt-2 w-[30rem] bg-white shadow-md rounded-lg bg-op">
-                            {predefinedCryptoList.map(crypto => (
-                                <Link key={crypto.id} href={`/market/${crypto.symbol}`}>
-                                    <div className="py-2 px-3 hover:bg-black hover:text-white cursor-pointer flex justify-between">
-                                        <p>{crypto.name}</p> <p>({crypto.symbol})</p>
-                                    </div>
-                                </Link>
-                            ))}
-                        </div>
-                        
+                            <div className="absolute mt-2 w-[30rem] bg-white shadow-md rounded-lg bg-op">
+                                {predefinedCryptoList.map(crypto => (
+                                    <Link key={crypto.id} href={`/market/${crypto.symbol}`}>
+                                        <div className="py-2 px-3 hover:bg-black hover:text-white cursor-pointer flex justify-between">
+                                            <p>{crypto.name}</p> <p>({crypto.symbol})</p>
+                                        </div>
+                                    </Link>
+                                ))}
+                            </div>
+
                         </>
                     )}
                     {searchTerm.trim() !== '' && (
@@ -110,8 +123,8 @@ const Header = ({ sess }: any) => {
                                 <Link href={"/dashboard"}>
                                     <li className="py-2 px-3 hover:bg-black hover:text-white transition-all duration-500">Dashboard</li>
                                 </Link>
-                                <Link href={"/account"}>
-                                    <li className="py-2 px-3 hover:bg-black hover:text-white transition-all duration-500">My Account</li>
+                                <Link href={"/investment"}>
+                                    <li className="py-2 px-3 hover:bg-black hover:text-white transition-all duration-500">Investment</li>
                                 </Link>
                                 <Link href={"/logout"}>
                                     <li className="py-2 px-3 hover:bg-black hover:text-white transition-all duration-500">Logout</li>

@@ -1,11 +1,9 @@
 "use client"
 import { useEffect, useState, Suspense } from "react";
 import Loader from "@/app/loding";
-import HoldingStock from "@/components/HoldingStock";
-import Stocks, { CryptoData as StocksCryptoData } from "@/components/Stocks";
 import { usePathname } from "next/navigation";
 import axios from "axios";
-import Link from "next/link";
+import HoldingPageCard from "@/components/HoldingPageCard";
 
 export interface CryptoData {
     id: number;
@@ -15,17 +13,17 @@ export interface CryptoData {
     change?: string | number;
 }
 
-const Dashboard = () => {
+const Investment = () => {
     const [cryptoData, setCryptoData] = useState<Map<string, CryptoData>>(new Map());
     const [holdingsData, setHoldingsData] = useState<any[]>([]);
     const [loaded, setLoaded] = useState<boolean>(false);
     const paths = usePathname();
-    const [ws, setWs] = useState<WebSocket | null>(null); // State to hold the WebSocket instance
+    const [ws, setWs] = useState<WebSocket | null>(null);
 
     useEffect(() => {
         const wsURL = 'wss://fstream.binance.com/ws/btcusdt@kline_1m';
         const newWs = new WebSocket(wsURL);
-        setWs(newWs); // Save the WebSocket instance to state
+        setWs(newWs); 
 
         newWs.onopen = () => {
             setLoaded(true);
@@ -87,7 +85,7 @@ const Dashboard = () => {
         };
 
         return () => {
-            newWs.close();
+            newWs.close(); 
         };
     }, [paths]);
 
@@ -132,23 +130,19 @@ const Dashboard = () => {
 
     return (
         <Suspense fallback={<Loader />}>
-            <h1 className="pagetitle">Dashboard</h1>
+            <h1 className="pagetitle">Investment</h1>
             <div className="grid grid-cols-5 gap-10">
                 <div className="col-span-3 mt-10 flex flex-col gap-10">
                     {loaded ? (
                         <>
-                            <HoldingStock holdingsData={holdingsData} cryptoData={cryptoDataArray} />
-                            <Stocks data={cryptoDataArray as StocksCryptoData[]} />
+                            <HoldingPageCard holdingsData={holdingsData} cryptoData={cryptoDataArray} />
                         </>
                     ) : (
                         <Loader />
                     )}
                 </div>
                 <div className="w-[100%] col-span-2 pl-20">
-                    <div className="flex justify-between items-center  mb-10">
-                        <h1 className="text-black font-medium text-2xl tracking-widest">Your Investment</h1>
-                        <h1 className="text-lg font-medium text-green-600"><Link href={"/investment"} >View All</Link></h1>
-                    </div>
+                    <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Your Investment</h1>
 
                     <div className="flex justify-between bg-white shadow-[0_0_3px_1px_#ddd] w-[100%] py-5 px-5 rounded-lg">
                         <div className="flex flex-col gap-2">
@@ -166,4 +160,4 @@ const Dashboard = () => {
     );
 };
 
-export default Dashboard;
+export default Investment;

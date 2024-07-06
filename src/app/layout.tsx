@@ -5,7 +5,6 @@ import Header from "@/components/Header";
 import { Suspense } from "react";
 import Loader from "@/app/loding";
 import { auth } from "@/auth";
-
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -20,6 +19,8 @@ export default async function RootLayout({
 }>) {
 
   const session = await auth();
+  
+  
   return (
     <html lang="en">
       <body className={inter.className}>

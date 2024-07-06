@@ -188,7 +188,7 @@ const Details: React.FC = () => {
   return (
     <>
       {!loaded && (
-        <div className='absolute  w-screen h-[89vh] left-0 bottom-0 bg-white backdrop-blur-xl z-50'>
+        <div className='fixed  w-screen h-[89vh] left-0 bottom-0 bg-white backdrop-blur-xl z-50'>
           <Loader />
         </div>
       )}

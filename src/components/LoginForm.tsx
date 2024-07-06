@@ -48,8 +48,8 @@ const LoginForm = (): React.ReactNode => {
 
             const data = await response.json();
             if(data.success === "ok"){
-
                 toast.success(data.message || 'Login successful');
+                
             }else{
                 toast.error(data.message || 'Login Failed');
                 
