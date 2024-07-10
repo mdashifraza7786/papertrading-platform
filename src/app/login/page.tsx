@@ -11,7 +11,7 @@ const Page = async () => {
     return (
         <>
             <div className="flex flex-col gap-16">
-                <h1 className="font-semibold tracking-widest text-3xl px-10">Login</h1>
+                <h1 className="font-semibold tracking-widest text-3xl px-5">Login</h1>
                 <div className="md:grid md:grid-cols-2">
                     <div>
                         <LoginForm />

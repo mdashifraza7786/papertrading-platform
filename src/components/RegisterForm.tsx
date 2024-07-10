@@ -82,7 +82,7 @@ const RegisterForm = (): React.ReactNode => {
     return (
         <>
             <form onSubmit={handleLogin}>
-                <div className="bg-white shadow-[0_0_5px_1px_#fff] w-[70%] px-10 py-5 flex gap-10 flex-col">
+                <div className="bg-white shadow-[0_0_5px_1px_#fff] md:w-[70%] px-10 py-5 flex gap-10 flex-col">
                     <div className="relative">
                         <input
                             type="text"
