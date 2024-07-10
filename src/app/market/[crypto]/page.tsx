@@ -151,7 +151,7 @@ const Details: React.FC = () => {
     } else {
       setInputError('');
     }
-  }, [price, quantity]);
+  }, [price, quantity,walletData]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuantity = parseFloat(e.target.value);

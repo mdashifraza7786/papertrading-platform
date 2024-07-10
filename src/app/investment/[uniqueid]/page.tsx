@@ -30,7 +30,6 @@ const Details: React.FC = () => {
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [price, setPrice] = useState<number>(0);
   const [quantity, setQuantity] = useState<number | string>(0.1);
-  const [payable, setPayable] = useState<number>(0);
   const [loaded, setLoaded] = useState<boolean>(false);
   const [inputError, setInputError] = useState<string>('');
   const [walletData, setWalletData] = useState<number>(0);
@@ -158,14 +157,7 @@ const Details: React.FC = () => {
     };
   }, [symbol]);
 
-  useEffect(() => {
-    setPayable(price * (typeof quantity === 'number' ? quantity : 0));
-    if (price * (typeof quantity === 'number' ? quantity : 0) > walletData) {
-      setInputError('Insufficient balance');
-    } else {
-      setInputError('');
-    }
-  }, [price, quantity]);
+
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const newQuantity = parseFloat(e.target.value);
