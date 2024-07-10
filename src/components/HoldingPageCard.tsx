@@ -11,8 +11,8 @@ const HoldingPageCard = ({ holdingsData, cryptoData }: { holdingsData: any[], cr
                 <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Holding</h1>
                 <div className="grid grid-cols-2 gap-5">
                     {holdingsData
-                        .filter(holding => holding.actiontype === "hold")
-                        .map((holding, index) => (
+                        ?.filter(holding => holding.actiontype === "hold")
+                        ?.map((holding, index) => (
                             <Link href={`/investment/${holding.uniqueid}`}>
                                 <HoldingCard key={index} holding={holding} cryptoData={cryptoData} />
                             </Link>
