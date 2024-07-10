@@ -20,7 +20,7 @@ const Header = ({ sess }: any) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [searchResults, setSearchResults] = useState<{ id: number; name: string; symbol: string; }[]>([]);
     const [inputFocused, setInputFocused] = useState<boolean>(false);
-    const [walletData,setWalletData] = useState<number>(0);
+    const [walletData,setWalletData] = useState<number | string>("Loading");
     const pathname = usePathname();
     const router = useRouter();
 
