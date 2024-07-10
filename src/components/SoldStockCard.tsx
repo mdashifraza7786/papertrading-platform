@@ -1,49 +1,42 @@
 import { CryptoData } from "@/app/dashboard/page";
 import Loader from "@/app/loding";
 import { getCryptoName } from "@/util/getCryptoName";
-import Link from "next/link";
 import { Suspense } from "react";
 
-const HoldingPageCard = ({ holdingsData, cryptoData }: { holdingsData: any[], cryptoData: CryptoData[] }) => {
+const SoldStockCard = ({ holdingsData }: { holdingsData: any[], cryptoData: CryptoData[] }) => {
     return (
         <Suspense fallback={<Loader />}>
             <div>
-                <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Holding</h1>
+                <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Sold Stocks</h1>
                 <div className="grid grid-cols-2 gap-5">
                     {holdingsData
-                        .filter(holding => holding.actiontype === "hold")
+                        .filter(holding => holding.actiontype === "sold") 
                         .map((holding, index) => (
-                            <Link href={`/investment/${holding.uniqueid}`}>
-                                <HoldingCard key={index} holding={holding} cryptoData={cryptoData} />
-                            </Link>
+                            <SoldCard key={index} holding={holding}  />
                         ))
                     }
 
                 </div>
-                {holdingsData.length <= 0 && (
-                    <div className="text-center text-gray-500 text-xl">No holding</div>
+                {holdingsData.filter(holding => holding.actiontype === "sold").length <= 0 && (
+                    <div className="text-center text-gray-500 text-xl">You haven't sold any stock yet.</div>
                 )}
             </div>
         </Suspense>
     );
 };
 
-export default HoldingPageCard;
+export default SoldStockCard;
 
 
 
 interface Props {
     holding: any;
-    cryptoData: CryptoData[];
 }
 
-const HoldingCard: React.FC<Props> = ({ holding, cryptoData }) => {
-    const symbol = holding.symbol.toLowerCase() + "usdt";
+const SoldCard: React.FC<Props> = ({ holding }) => {
     const Price = parseFloat(holding.price["$numberDecimal"]);
     const Quantity = parseFloat(holding.quantity["$numberDecimal"]);
-
-    const crypto = cryptoData.find(data => data.symbol.toLowerCase() === symbol);
-    const currentPrice = crypto ? parseFloat(crypto.price as string) : null;
+    const currentPrice = Number(holding.sellat.$numberDecimal)
 
     if (!currentPrice) {
         return (

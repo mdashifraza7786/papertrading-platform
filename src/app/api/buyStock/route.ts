@@ -1,5 +1,6 @@
 import { auth } from "@/auth";
 import { HoldingModel, HoldingDocument } from "@/models/Holding";
+import { TransactionModel, TransactionsDocument } from "@/models/Transactions";
 import { getBalanceByEmail, updateWalletBalance } from "@/models/Users";
 import connectDB from "@/util/dbConnect";
 import { NextResponse } from "next/server";
@@ -24,6 +25,9 @@ export async function POST(request: Request) {
         const actiontype = "hold";
         const newHolding: HoldingDocument = new HoldingModel({ email,uniqueid, quantity, price, actiontype, symbol });
         await newHolding.save();
+        
+        const newTransaction: TransactionsDocument = new TransactionModel({ email,uniqueid, quantity, price, actiontype, symbol });
+        await newTransaction.save();
 
         const balance = await getBalanceByEmail(email);
         return NextResponse.json(balance.balance);

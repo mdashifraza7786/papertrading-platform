@@ -4,6 +4,7 @@ import Loader from "@/app/loding";
 import { usePathname } from "next/navigation";
 import axios from "axios";
 import HoldingPageCard from "@/components/HoldingPageCard";
+import SoldStockCard from "@/components/SoldStockCard";
 
 export interface CryptoData {
     id: number;
@@ -13,9 +14,18 @@ export interface CryptoData {
     change?: string | number;
 }
 
+interface HoldingData {
+    uniqueid: number;
+    quantity: { $numberDecimal: string };
+    price: { $numberDecimal: string };
+    actiontype: string;
+    symbol: string;
+    __v: number;
+}
+
 const Investment = () => {
     const [cryptoData, setCryptoData] = useState<Map<string, CryptoData>>(new Map());
-    const [holdingsData, setHoldingsData] = useState<any[]>([]);
+    const [holdingsData, setHoldingsData] = useState<HoldingData[]>([]); // Updated useState declaration
     const [loaded, setLoaded] = useState<boolean>(false);
     const paths = usePathname();
     const [ws, setWs] = useState<WebSocket | null>(null);
@@ -92,8 +102,8 @@ const Investment = () => {
     useEffect(() => {
         const fetchHoldings = async () => {
             try {
-                const response = await axios.get("/api/getHoldings");
-                setHoldingsData(response.data);
+                const response = await axios.get("/api/investment");
+                setHoldingsData(response.data); 
             } catch (error) {
                 console.error("Error fetching holdings:", error);
             }
@@ -103,23 +113,24 @@ const Investment = () => {
 
     }, []);
 
-    const calculateTotalInvestment = () => {
+    const calculateHoldingInvestment = () => {
         let totalInvestment = 0;
-        holdingsData.forEach(holding => {
-            const totalPrice = parseFloat(holding.totalPrice.$numberDecimal);
-            totalInvestment += totalPrice;
+        holdingsData.filter(holding => holding.actiontype === "hold").forEach(holding => {
+            const totalPrice = parseFloat(holding.price.$numberDecimal);
+            const totalQuantity = parseFloat(holding.quantity.$numberDecimal);
+            totalInvestment += totalPrice * totalQuantity;
         });
         return totalInvestment.toFixed(2);
     };
 
     const calculateCurrentValue = () => {
         let currentValue = 0;
-        holdingsData.forEach(holding => {
+        holdingsData.filter(holding => holding.actiontype === "hold").forEach(holding => {
             const symbol = holding.symbol.toUpperCase() + "usdt";
             const crypto = cryptoData.get(symbol.toLowerCase());
             if (crypto) {
                 const price = parseFloat(crypto.price as string);
-                const totalQuantity = parseFloat(holding.totalQuantity.$numberDecimal);
+                const totalQuantity = parseFloat(holding.quantity.$numberDecimal);
                 currentValue += price * totalQuantity;
             }
         });
@@ -127,7 +138,6 @@ const Investment = () => {
     };
 
     const cryptoDataArray: CryptoData[] = Array.from(cryptoData.values());
-
     return (
         <Suspense fallback={<Loader />}>
             <h1 className="pagetitle">Investment</h1>
@@ -136,18 +146,19 @@ const Investment = () => {
                     {loaded ? (
                         <>
                             <HoldingPageCard holdingsData={holdingsData} cryptoData={cryptoDataArray} />
+                            <SoldStockCard holdingsData={holdingsData} cryptoData={cryptoDataArray} />
                         </>
                     ) : (
                         <Loader />
                     )}
                 </div>
                 <div className="w-[100%] col-span-2 pl-20">
-                    <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Your Investment</h1>
+                    <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Investment</h1>
 
                     <div className="flex justify-between bg-white shadow-[0_0_3px_1px_#ddd] w-[100%] py-5 px-5 rounded-lg">
                         <div className="flex flex-col gap-2">
-                            <h2 className="text-2xl font-semibold">${calculateTotalInvestment()}</h2>
-                            <h4 className="text-gray-500">Total Investment</h4>
+                            <h2 className="text-2xl font-semibold">${calculateHoldingInvestment()}</h2>
+                            <h4 className="text-gray-500">Holding Investment</h4>
                         </div>
                         <div className="flex flex-col gap-2">
                             <h2 className="text-2xl font-semibold">${calculateCurrentValue()}</h2>

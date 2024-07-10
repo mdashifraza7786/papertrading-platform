@@ -13,7 +13,7 @@ const UserSchema: Schema<UserDocument> = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
     password: { type: String, required: true },
-    balance: { type: Number, default: 10000 }
+    balance: { type: Number, default: 100000 }
 });
 
 // Create the User model based on the schema

@@ -16,37 +16,53 @@ interface CandlestickData {
   close: number;
 }
 
+interface Investment {
+  uniqueid: number;
+  quantity: { $numberDecimal: string };
+  price: { $numberDecimal: string };
+  actiontype: string;
+  symbol: string;
+  __v: number;
+}
+
 const Details: React.FC = () => {
-  const { crypto } = useParams();
+  const { uniqueid } = useParams();
   const chartContainerRef = useRef<HTMLDivElement>(null);
   const [price, setPrice] = useState<number>(0);
-  const [quantity, setQuantity] = useState<number | string>(1);
+  const [quantity, setQuantity] = useState<number | string>(0.1);
   const [payable, setPayable] = useState<number>(0);
   const [loaded, setLoaded] = useState<boolean>(false);
   const [inputError, setInputError] = useState<string>('');
-  const [walletData, setWalletData] = useState<number>(0)
-  const [loading, setLoading] = useState(false);
-
-  const changeQuantity = (increment: boolean) => {
-    if (increment) {
-      if (typeof quantity !== 'number') {
-        setQuantity(1);
-      } else {
-        setQuantity(prevQuantity => Number((prevQuantity as number + 1).toFixed(2)));
-      }
-    } else {
-      if (typeof quantity !== 'number') {
-        setQuantity(1);
-      } else if (typeof quantity == 'number' && quantity > 0.01) {
-        setQuantity(prevQuantity => Number((prevQuantity as number - 1).toFixed(2)));
-      }
-    }
-  };
+  const [walletData, setWalletData] = useState<number>(0);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [investmentLoad, setInvestmentLoad] = useState<Investment[] | null>(null);
 
   useEffect(() => {
-    if (!crypto) return;
+    const getInvestment = async () => {
+      try {
+        const res = await axios.get('/api/investment?investment=' + uniqueid);
+        setInvestmentLoad(res.data);
+      } catch (error) {
+        console.error('Error fetching investment:', error);
+      }
+    };
+    if (uniqueid) {
+      getInvestment();
+    }
+  }, [uniqueid,walletData]);
 
-    const selectedSymbol = (crypto as string).toLowerCase() + "usdt";
+  const symbol = investmentLoad ? investmentLoad[0]?.symbol : null;
+  const havingquantities = investmentLoad ? parseFloat(investmentLoad[0]?.quantity.$numberDecimal) : 0;
+
+
+
+  useEffect(() => {
+    if (!symbol) {
+      window.location.href = "/investment"
+      return
+    }
+
+    const selectedSymbol = symbol.toLowerCase() + "usdt";
     const forhistory = selectedSymbol.toUpperCase();
 
     const chartProperties = {
@@ -64,12 +80,12 @@ const Details: React.FC = () => {
       date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
       return date.getTime();
     };
+
     const fetchWalletData = async () => {
       try {
         const response = await axios.get('/api/getWallet');
         setWalletData(response.data);
         setLoaded(true);
-
       } catch (error) {
         console.error('Error fetching wallet data:', error);
       }
@@ -82,7 +98,6 @@ const Details: React.FC = () => {
         const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${forhistory}&interval=1m&limit=19999000000`);
 
         if (!response.ok) {
-          console.log(response)
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
@@ -100,7 +115,6 @@ const Details: React.FC = () => {
           close: Number(d[4]),
         }));
 
-        // setLoaded(true);
         candleSeries.setData(cdata);
 
       } catch (error) {
@@ -142,7 +156,7 @@ const Details: React.FC = () => {
       ws.close();
       chart.remove();
     };
-  }, [crypto]);
+  }, [symbol]);
 
   useEffect(() => {
     setPayable(price * (typeof quantity === 'number' ? quantity : 0));
@@ -162,24 +176,20 @@ const Details: React.FC = () => {
     }
   };
 
-  const BuyNowHandle = async () => {
+  const SellNowHandle = async () => {
     setLoading(true);
-    if (payable < 0) {
+    if (typeof quantity !== 'number' || quantity <= 0 || quantity > havingquantities) {
       setLoading(false);
-
-      toast.error("Insufficient Wallet Balance");
+      toast.error("Invalid quantity or quantity exceeds holdings");
       return;
     }
     try {
-      const response = await axios.post('/api/buyStock', {
-        quantity: quantity,
-        price: price.toFixed(2),
-        symbol: crypto
+      const response = await axios.post('/api/sellStock', {
+        id: uniqueid,
+        priceat:price
       });
       setWalletData(response.data);
       setLoading(false);
-
-
     } catch (error) {
       console.error('Error fetching wallet data:', error);
     }
@@ -188,13 +198,15 @@ const Details: React.FC = () => {
   return (
     <>
       {!loaded && (
-        <div className='fixed  w-screen h-[89vh] left-0 bottom-0 bg-white backdrop-blur-xl z-50'>
+        <div className='fixed w-screen h-[89vh] left-0 bottom-0 bg-white backdrop-blur-xl z-50'>
           <Loader />
         </div>
       )}
-      <div className='mb-10 '>
-        <h1 className='text-3xl font-semibold'>{getCryptoName(crypto as string)} ({crypto})</h1>
-      </div>
+      {symbol && (
+        <div className='mb-10'>
+          <h1 className='text-3xl font-semibold'>{getCryptoName(symbol)} ({symbol})</h1>
+        </div>
+      )}
       <div className='flex justify-between gap-10'>
         <div id="chart-container" className='w-[75%] border-2 overflow-hidden rounded-lg -z-d10 border-primary flex justify-center items-center'>
           <div ref={chartContainerRef} style={{ width: '100%', height: '35.8rem' }} />
@@ -202,18 +214,18 @@ const Details: React.FC = () => {
         <div className="h-full w-[25%] r">
           <div className='h-[30rem] relative px-5 py-3 bg-white shadow-[0_0_5px_1px_#ddd] rounded-lg'>
             <div>
-              <h1 className='text-black font-semibold text-lg uppercase tracking-widest'>{getCryptoName(crypto as string)}</h1>
+              <h1 className='text-black font-semibold text-lg uppercase tracking-widest'>{getCryptoName(symbol as string)}</h1>
               <h3 className='text-sm'>${price.toFixed(2)}</h3>
               <div className='bg-gray-300 h-[1.5px] my-2 w-full absolute left-0'></div>
               <div className='mt-10 flex gap-5'>
-                <button className='rounded-lg w-[40px] h-[40px] text-3xl hover:bg-green-700 flex justify-center items-center bg-green-600 text-white' onClick={() => changeQuantity(false)}>-</button>
                 <input
                   type="number"
                   onChange={handleInputChange}
-                  value={quantity}
-                  className={`w-[65%] rounded-lg text-xl text-center outline-none ${inputError ? 'border-[1.5px] border-red-500' : ' border-[1.5px] border-gray-400'}`}
+                  value={havingquantities}
+                  disabled
+                  readOnly
+                  className={`w-[100%] h-[40px] rounded-lg text-xl text-center outline-none ${inputError ? 'border-[1.5px] border-red-500' : ' border-[1.5px] border-gray-400'}`}
                 />
-                <button className='rounded-lg w-[40px] h-[40px] text-3xl hover:bg-green-700 flex justify-center items-center bg-green-600 text-white' onClick={() => changeQuantity(true)}>+</button>
               </div>
               {inputError && <p className="text-red-500 mt-1">{inputError}</p>}
             </div>
@@ -221,10 +233,10 @@ const Details: React.FC = () => {
             <div className='absolute bottom-5 left-0 w-full'>
               <div className='flex w-[100%] justify-between text-[12px] px-6'>
                 <p className='font-semibold text-gray-700'>Balance: ${walletData.toFixed(2)}</p>
-                <p className='font-semibold text-gray-700 '>Required: ${(price * Number(quantity)).toFixed(2)}</p>
+                <p className='font-semibold text-gray-700 '>Estimate : ${(havingquantities as number* price).toFixed(2)}</p>
               </div>
               <div className='flex justify-center items-center' >
-                <button onClick={BuyNowHandle} className={`w-[88%] flex justify-center items-center rounded-lg bg-green-600 hover:bg-green-700 text-white py-2 mt-5 ${quantity as number > 0 && payable < walletData ? "" : "disabled:cursor-not-allowed disabled:bg-green-400 disabled:text-gray-200"}`} disabled={quantity as number > 0 && payable < walletData ? false : true}>
+                <button onClick={SellNowHandle} className={`w-[88%] flex justify-center items-center rounded-lg bg-red-600 hover:bg-red-700 text-white py-2 mt-5 ${quantity as number > 0 && Number(quantity) <= havingquantities ? "" : "disabled:cursor-not-allowed disabled:bg-red-400 disabled:text-gray-200"}`} disabled={quantity as number > 0 && Number(quantity) <= havingquantities ? false : true}>
                   {loading ? (
                     <ThreeDots
                       visible={true}
@@ -237,7 +249,7 @@ const Details: React.FC = () => {
                       wrapperClass=""
                     />
                   ) : (
-                    'Buy'
+                    'Sell'
                   )}
                 </button>
               </div>
