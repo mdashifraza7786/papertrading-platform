@@ -8,7 +8,7 @@ const HoldingStock = ({ holdingsData, cryptoData }: { holdingsData: any[], crypt
         <Suspense fallback={<Loader />}>
             <div>
                 <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Holding</h1>
-                <div className="grid grid-cols-3 gap-5">
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
                     {holdingsData.map((holding, index) => (
                         <HoldingCard key={index} holding={holding} cryptoData={cryptoData} />
                     ))}

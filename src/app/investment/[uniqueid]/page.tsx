@@ -200,19 +200,19 @@ const Details: React.FC = () => {
       )}
       {symbol && (
         <div className='mb-10'>
-          <h1 className='text-3xl font-semibold'>{getCryptoName(symbol)} ({symbol})</h1>
+          <h1 className='md:text-3xl text-xl font-semibold px-5 md:px-0'>{getCryptoName(symbol)} ({symbol})</h1>
         </div>
       )}
-      <div className='flex justify-between gap-10'>
-        <div id="chart-container" className='w-[75%] border-2 overflow-hidden rounded-lg -z-d10 border-primary flex justify-center items-center'>
+      <div className='md:flex justify-between gap'>
+        <div id="chart-container" className='w-[100%] pb-56 md:pb-0 md:w-[75%] border-2 overflow-hidden rounded-lg -z-d10 border-primary flex justify-center items-center'>
           <div ref={chartContainerRef} style={{ width: '100%', height: '35.8rem' }} />
         </div>
-        <div className="h-full w-[25%] r">
-          <div className='h-[30rem] relative px-5 py-3 bg-white shadow-[0_0_5px_1px_#ddd] rounded-lg'>
+        <div className="md:h-full md:w-[24%] w-[100%] fixed md:relative bottom-0 left-0 z-50">
+          <div className='md:h-[30rem] h-[12rem] relative px-5 md:py-3 pt-6 bg-white shadow-[0_0_5px_1px_#ddd] rounded-lg'>
             <div>
-              <h1 className='text-black font-semibold text-lg uppercase tracking-widest'>{getCryptoName(symbol as string)}</h1>
-              <h3 className='text-sm'>${price.toFixed(2)}</h3>
-              <div className='bg-gray-300 h-[1.5px] my-2 w-full absolute left-0'></div>
+              <h1 className='text-black font-semibold text-lg uppercase tracking-widest md:block hidden'>{getCryptoName(symbol as string)}</h1>
+              <h3 className='text-sm md:block hidden'>${price.toFixed(2)}</h3>
+              <div className='bg-gray-300 h-[1.5px] my-2 w-full absolute left-0 md:block hidden'></div>
               <div className='mt-10 flex gap-5'>
                 <input
                   type="number"

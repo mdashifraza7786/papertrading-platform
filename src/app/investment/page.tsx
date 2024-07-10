@@ -33,7 +33,7 @@ const Investment = () => {
     useEffect(() => {
         const wsURL = 'wss://fstream.binance.com/ws/btcusdt@kline_1m';
         const newWs = new WebSocket(wsURL);
-        setWs(newWs); 
+        setWs(newWs);
 
         newWs.onopen = () => {
             setLoaded(true);
@@ -95,7 +95,7 @@ const Investment = () => {
         };
 
         return () => {
-            newWs.close(); 
+            newWs.close();
         };
     }, [paths]);
 
@@ -103,7 +103,7 @@ const Investment = () => {
         const fetchHoldings = async () => {
             try {
                 const response = await axios.get("/api/investment");
-                setHoldingsData(response.data); 
+                setHoldingsData(response.data);
             } catch (error) {
                 console.error("Error fetching holdings:", error);
             }
@@ -140,9 +140,9 @@ const Investment = () => {
     const cryptoDataArray: CryptoData[] = Array.from(cryptoData.values());
     return (
         <Suspense fallback={<Loader />}>
-            <h1 className="pagetitle">Investment</h1>
-            <div className="grid grid-cols-5 gap-10">
-                <div className="col-span-3 mt-10 flex flex-col gap-10">
+            <h1 className="pagetitle  py-3 px-5 md:px-0 mb-10 md:mb-0">Investment</h1>
+            <div className="md:grid md:grid-cols-5 md:gap-10 flex flex-col-reverse">
+                <div className="col-span-3 px-5 md:px-0 mt-10 flex flex-col gap-10">
                     {loaded ? (
                         <>
                             <HoldingPageCard holdingsData={holdingsData} cryptoData={cryptoDataArray} />
@@ -152,19 +152,26 @@ const Investment = () => {
                         <Loader />
                     )}
                 </div>
-                <div className="w-[100%] col-span-2 pl-20">
+                <div className="w-[100%] col-span-2 md:pl-20 px-5">
                     <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Investment</h1>
+                    {loaded ? (
+                        <>
+                            <div className="flex justify-between bg-white shadow-[0_0_3px_1px_#ddd] w-[100%] py-5 px-5 rounded-lg">
+                                <div className="flex flex-col gap-2">
+                                    <h2 className="text-2xl font-semibold">${calculateHoldingInvestment()}</h2>
+                                    <h4 className="text-gray-500">Holding Investment</h4>
+                                </div>
+                                <div className="flex flex-col gap-2">
+                                    <h2 className="text-2xl font-semibold">${calculateCurrentValue()}</h2>
+                                    <h4 className="text-gray-500">Current Value</h4>
+                                </div>
+                            </div>
+                        </>
+                    ) : (
+                        <h1 className="text-xl text-center">Loading...</h1>
+                    )}
 
-                    <div className="flex justify-between bg-white shadow-[0_0_3px_1px_#ddd] w-[100%] py-5 px-5 rounded-lg">
-                        <div className="flex flex-col gap-2">
-                            <h2 className="text-2xl font-semibold">${calculateHoldingInvestment()}</h2>
-                            <h4 className="text-gray-500">Holding Investment</h4>
-                        </div>
-                        <div className="flex flex-col gap-2">
-                            <h2 className="text-2xl font-semibold">${calculateCurrentValue()}</h2>
-                            <h4 className="text-gray-500">Current Value</h4>
-                        </div>
-                    </div>
+
                 </div>
             </div>
         </Suspense>

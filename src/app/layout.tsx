@@ -25,7 +25,7 @@ export default async function RootLayout({
     <html lang="en">
       <body className={inter.className}>
         <Header sess={session} />
-        <div className="px-20 my-7">
+        <div className="md:px-20 my-7">
           <Suspense fallback={<Loader />}>
             {children}
           </Suspense>

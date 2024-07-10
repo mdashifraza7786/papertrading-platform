@@ -12,11 +12,11 @@ const Page = async () => {
         <>
             <div className="flex flex-col gap-16">
                 <h1 className="font-semibold tracking-widest text-3xl px-10">Login</h1>
-                <div className="grid grid-cols-2">
+                <div className="md:grid md:grid-cols-2">
                     <div>
                         <LoginForm />
                     </div>
-                    <div className="bg-cover bg-center relative">
+                    <div className="bg-cover bg-center relative md:block hidden">
                         <Image src="/loginpagesvg.svg" className="absolute -top-5 w-[75%]" width={100} height={100} objectFit="cover" loading="lazy"  alt="" />
                     </div>
                 </div>

@@ -16,7 +16,7 @@ const Stocks = ({ data }: { data: CryptoData[] }) => {
     return (
         <Suspense fallback={<Loader />}>
             <h1 className="text-black font-medium text-2xl tracking-widest">Stocks</h1>
-            <div className="grid grid-cols-3 gap-5">
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-5">
                 {data.map(crypto => (
                     <Link key={crypto.id} href={"/market/"+crypto.name.replace("USDT","")}>
                         <StocksCard
