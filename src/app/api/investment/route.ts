@@ -17,6 +17,9 @@ export async function GET(request: NextRequest) {
         await connectDB();
         if(investmentsparam){
             const investments = await TransactionModel.find({ email, uniqueid:investmentsparam,actiontype:"hold" }).select('-email -_id').lean();
+            if (investments.length === 0) {
+                return NextResponse.json(null);
+            }
             return NextResponse.json(investments);
         }else{
             const investments = await TransactionModel.find({ email }).select('-email -_id').lean();

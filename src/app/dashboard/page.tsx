@@ -153,7 +153,7 @@ const Dashboard = () => {
                     <div className="flex justify-between bg-white shadow-[0_0_3px_1px_#ddd] w-[100%] py-5 px-5 rounded-lg">
                         <div className="flex flex-col gap-2">
                             <h2 className="text-2xl font-semibold">${calculateTotalInvestment()}</h2>
-                            <h4 className="text-gray-500">Total Investment</h4>
+                            <h4 className="text-gray-500">Holding Investment</h4>
                         </div>
                         <div className="flex flex-col gap-2">
                             <h2 className="text-2xl font-semibold">${calculateCurrentValue()}</h2>

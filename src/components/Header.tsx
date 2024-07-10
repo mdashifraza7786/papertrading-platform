@@ -4,6 +4,7 @@ import NextTopLoader from "nextjs-toploader"
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import axios from "axios";
 
 const predefinedCryptoList = [
     { "id": 1, "name": "Bitcoin", "symbol": "BTC" },
@@ -19,6 +20,7 @@ const Header = ({ sess }: any) => {
     const [searchTerm, setSearchTerm] = useState<string>('');
     const [searchResults, setSearchResults] = useState<{ id: number; name: string; symbol: string; }[]>([]);
     const [inputFocused, setInputFocused] = useState<boolean>(false);
+    const [walletData,setWalletData] = useState<number>(0);
     const pathname = usePathname();
     const router = useRouter();
 
@@ -34,6 +36,16 @@ const Header = ({ sess }: any) => {
         } else {
             setLoggedin(false);
         }
+
+        const fetchWalletData = async () => {
+            try {
+              const response = await axios.get('/api/getWallet');
+              setWalletData(response.data);
+            } catch (error) {
+              console.error('Error fetching wallet data:', error);
+            }
+          };
+          fetchWalletData();
     }, [sess?.user, pathname])
 
     const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
@@ -61,6 +73,7 @@ const Header = ({ sess }: any) => {
     useEffect(() => {
         setInputFocused(false);
     }, [pathname])
+
     return (
         <>
             <NextTopLoader color="#16A34A" />
@@ -120,6 +133,9 @@ const Header = ({ sess }: any) => {
                     <ul className="flex gap-5 font-medium">
                         {loggedin === true ? (
                             <>
+                                <div>
+                                    <li className="py-2 px-3 rounded-xl shadow-[0_0_3px_1px_#ddd]">Wallet: ${walletData}</li>
+                                </div>
                                 <Link href={"/dashboard"}>
                                     <li className="py-2 px-3 hover:bg-black hover:text-white transition-all duration-500">Dashboard</li>
                                 </Link>

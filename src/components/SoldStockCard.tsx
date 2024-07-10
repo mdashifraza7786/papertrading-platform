@@ -8,18 +8,20 @@ const SoldStockCard = ({ holdingsData }: { holdingsData: any[], cryptoData: Cryp
         <Suspense fallback={<Loader />}>
             <div>
                 <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Sold Stocks</h1>
+                {holdingsData
+                    ?.filter(holding => holding.actiontype === "sold").filter(holding => holding.actiontype === "sold").length <= 0 && (
+                        <div className="text-center text-gray-500 text-xl">You have not sold any stock yet.</div>
+                    )}
                 <div className="grid grid-cols-2 gap-5">
                     {holdingsData
-                        ?.filter(holding => holding.actiontype === "sold") 
+                        ?.filter(holding => holding.actiontype === "sold")
                         ?.map((holding, index) => (
-                            <SoldCard key={index} holding={holding}  />
+                            <SoldCard key={index} holding={holding} />
                         ))
                     }
 
                 </div>
-                {holdingsData.filter(holding => holding.actiontype === "sold").length <= 0 && (
-                    <div className="text-center text-gray-500 text-xl">You have not sold any stock yet.</div>
-                )}
+
             </div>
         </Suspense>
     );

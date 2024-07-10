@@ -176,10 +176,9 @@ const Details: React.FC = () => {
         price: price.toFixed(2),
         symbol: crypto
       });
+      window.location.href = "/investment"
       setWalletData(response.data);
       setLoading(false);
-
-
     } catch (error) {
       console.error('Error fetching wallet data:', error);
     }

@@ -40,6 +40,10 @@ const Details: React.FC = () => {
     const getInvestment = async () => {
       try {
         const res = await axios.get('/api/investment?investment=' + uniqueid);
+        if(res.data==null){
+          window.location.href = "/investment";
+          return
+        }
         setInvestmentLoad(res.data);
       } catch (error) {
         console.error('Error fetching investment:', error);
@@ -52,12 +56,11 @@ const Details: React.FC = () => {
 
   const symbol = investmentLoad ? investmentLoad[0]?.symbol : null;
   const havingquantities = investmentLoad ? parseFloat(investmentLoad[0]?.quantity.$numberDecimal) : 0;
-
+ 
 
 
   useEffect(() => {
     if (!symbol) {
-      window.location.href = "/investment"
       return
     }
 
@@ -150,7 +153,7 @@ const Details: React.FC = () => {
     ws.onerror = (error) => {
       console.error('WebSocket error:', error);
     };
-
+ 
     return () => {
       ws.close();
       chart.remove();
@@ -180,6 +183,7 @@ const Details: React.FC = () => {
         id: uniqueid,
         priceat:price
       });
+      window.location.href = "/investment"
       setWalletData(response.data);
       setLoading(false);
     } catch (error) {
