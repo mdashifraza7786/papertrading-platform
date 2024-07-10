@@ -67,7 +67,7 @@ const Header = ({ sess }: any) => {
     const handleInputBlur = () => {
         setTimeout(() => {
             setInputFocused(false);
-        }, 100)
+        }, 300)
     };
 
     useEffect(() => {
