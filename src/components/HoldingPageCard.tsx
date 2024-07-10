@@ -9,10 +9,7 @@ const HoldingPageCard = ({ holdingsData, cryptoData }: { holdingsData: any[], cr
         <Suspense fallback={<Loader />}>
             <div>
                 <h1 className="text-black font-medium text-2xl tracking-widest mb-10">Holding</h1>
-                {holdingsData
-                    ?.filter(holding => holding.actiontype === "hold").length <= 0 && (
-                        <div className="text-center text-gray-500 text-xl">No holding</div>
-                    )}
+                
                 <div className="grid grid-cols-2 gap-5">
                     {holdingsData
                         ?.filter(holding => holding.actiontype === "hold")
@@ -24,7 +21,10 @@ const HoldingPageCard = ({ holdingsData, cryptoData }: { holdingsData: any[], cr
                     }
 
                 </div>
-
+                {holdingsData
+                    ?.filter(holding => holding.actiontype === "hold").length <= 0 && (
+                        <div className="text-center text-gray-500 text-xl">No holding</div>
+                    )}
             </div>
         </Suspense>
     );
