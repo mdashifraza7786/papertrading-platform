@@ -12,6 +12,12 @@ const Page = async () => {
         <>
             <div className="flex flex-col gap-16">
                 <h1 className="font-semibold tracking-widest text-3xl px-5">Login</h1>
+                <div class="md:grid md:grid-cols-2">
+<div class="px-10">
+    <h3>Demo Account</h3>
+    <p>Email: test.ashif@gmail.com</p>
+    <p>Password: 123456</p>
+</div>    
                 <div className="md:grid md:grid-cols-2">
                     <div>
                         <LoginForm />
