@@ -51,3 +51,4 @@ function StocksCard({ name, price, change }: StocksCardProps) {
         </div>
     );
 }
+ 
