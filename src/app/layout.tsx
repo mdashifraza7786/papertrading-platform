@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import { Suspense } from "react";
 import Loader from "@/app/loding";
 import { auth } from "@/auth";
+
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -17,19 +18,15 @@ export default async function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
-
   const session = await auth();
-  
   
   return (
     <html lang="en">
       <body className={inter.className}>
         <Header sess={session} />
-        <div className="md:px-20 my-7">
-          <Suspense fallback={<Loader />}>
-            {children}
-          </Suspense>
-        </div>
+        <Suspense fallback={<Loader />}>
+          {children}
+        </Suspense>
       </body>
     </html>
   );

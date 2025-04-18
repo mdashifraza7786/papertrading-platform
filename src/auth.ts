@@ -1,6 +1,6 @@
 import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-import { compare } from 'bcrypt';
+// Import bcrypt only in server components
 import dbConnect from '@/util/dbConnect'; 
 import { getUserByEmail } from './models/Users';
 
@@ -25,7 +25,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     throw new CredentialsSignin('Please provide both email and password');
                 }
 
-             
+                try {
                     await dbConnect();
                     
                     const user = await getUserByEmail(email);
@@ -34,6 +34,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         throw new CredentialsSignin('Invalid Email or Password');
                     }
 
+                    // Import bcrypt dynamically only on the server
+                    const { compare } = await import('bcrypt');
                     const isMatch = await compare(password, user.password);
 
                     if (!isMatch) {
@@ -41,7 +43,10 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                     }
 
                     return { name: user.name, email: user.email };
-            
+                } catch (error) {
+                    console.error('Authentication error:', error);
+                    throw new CredentialsSignin('Authentication failed');
+                }
             },
         }),
     ],
