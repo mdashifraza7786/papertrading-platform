@@ -94,7 +94,7 @@ const Details: React.FC = () => {
     if (!crypto) return;
     
     const normalizedCrypto = (crypto as string).toUpperCase();
-    const symbol = `${normalizedCrypto}USDT`;
+    const symbol = `${normalizedCrypto}`;
     
     fetchChartData(symbol, newTimeframe);
   };
@@ -579,7 +579,7 @@ const Details: React.FC = () => {
       }
       
       const normalizedCrypto = (crypto as string).toUpperCase();
-      const symbol = `${normalizedCrypto}USDT`;
+      const symbol = `${normalizedCrypto}`;
       
       // Need to force a redraw using the new state
       // The key is to use the new value directly rather than relying on React state
@@ -762,7 +762,7 @@ const Details: React.FC = () => {
     if (!crypto) return;
 
     const normalizedCrypto = (crypto as string).toUpperCase();
-    const symbol = `${normalizedCrypto}USDT`;
+    const symbol = `${normalizedCrypto}`;
 
     // Set a loading timeout
     const loadingTimeout = setTimeout(() => {
