@@ -774,7 +774,7 @@ const Details: React.FC = () => {
       }
       clearInterval(priceChangeInterval);
     };
-  }, [crypto, timeframe]);
+  }, [crypto, timeframe, fetchChartData, loaded]);
 
   useEffect(() => {
     setPayable(price * (typeof quantity === 'number' ? quantity : 0));

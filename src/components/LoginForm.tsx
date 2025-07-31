@@ -146,7 +146,7 @@ const LoginForm = (): React.ReactNode => {
                 
                 <div className="text-center mt-6 pt-6 border-t border-gray-100">
                     <p className="text-gray-600">
-                        Don't have an account?{' '}
+                        Don&apos;t have an account?{' '}
                         <Link href="/register" className="text-green-600 hover:text-green-700 font-medium">
                             Create an account
                         </Link>

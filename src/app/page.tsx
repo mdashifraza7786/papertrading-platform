@@ -1,5 +1,6 @@
 "use client"
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 
@@ -54,10 +55,16 @@ export default function Home() {
             </div>
             <div className="md:w-1/2">
               <div className="bg-white/10 backdrop-blur-sm p-6 rounded-2xl shadow-2xl">
-                <img src="/trading-chart.svg" alt="Trading Chart" className="w-full h-auto" 
-                  onError={(e) => {
-                    const target = e.target as HTMLImageElement;
-                    target.src = "https://placehold.co/600x400/133263/FFFFFF?text=Trading+Platform";
+                <Image 
+                  src="/trading-chart.svg" 
+                  alt="Trading Chart" 
+                  width={600}
+                  height={400}
+                  className="w-full h-auto"
+                  onError={() => {
+                    // Using a placeholder image is not directly possible with Next.js Image
+                    // We'll handle this differently
+                    console.error("Failed to load trading chart image");
                   }}
                 />
               </div>
