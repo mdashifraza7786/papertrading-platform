@@ -389,7 +389,7 @@ const Details: React.FC = () => {
       }
       
       const normalizedCrypto = (crypto as string).toUpperCase();
-      const symbol = `${normalizedCrypto}USDT`;
+      const symbol = `${normalizedCrypto}`;
       
       // Need to force a redraw using the new state
       // The key is to use the new value directly rather than relying on React state
