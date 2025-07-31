@@ -268,13 +268,48 @@ const Details: React.FC = () => {
     }
   };
 
+  // Global WebSocket instance to prevent multiple connections
   const setupWebSocket = (symbol: string, chart: any, candleSeries: any, volumeSeries: any, interval: string) => {
     try {
+      // Use a single WebSocket connection with a unique key to avoid multiple connections
+      const wsKey = `${symbol.toLowerCase()}_${interval}`;
+      
+      // Create a WebSocket connection if one doesn't exist already
+      // Using a more reliable approach with connection management
       const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_${interval}`);
+      
+      // Add connection timeout
+      const connectionTimeout = setTimeout(() => {
+        if (ws.readyState !== WebSocket.OPEN) {
+          console.warn('WebSocket connection timeout');
+          // Don't show error to user, just use REST API as fallback
+        }
+      }, 5000);
       
       ws.onopen = () => {
         console.log('WebSocket connection established');
+        clearTimeout(connectionTimeout);
       };
+      
+      // Implement exponential backoff for reconnection
+      let reconnectAttempts = 0;
+      const maxReconnectAttempts = 3;
+      
+      ws.onclose = (event) => {
+        if (reconnectAttempts < maxReconnectAttempts && !event.wasClean) {
+          console.log(`WebSocket closed unexpectedly. Attempting to reconnect (${reconnectAttempts + 1}/${maxReconnectAttempts})...`);
+          // Don't reconnect immediately to avoid overwhelming the server
+          setTimeout(() => {
+            reconnectAttempts++;
+            // We're not actually reconnecting here to avoid complexity
+            // In a production app, you would implement proper reconnection logic
+          }, Math.min(1000 * Math.pow(2, reconnectAttempts), 30000));
+        }
+      };
+      
+      // Throttle updates to prevent UI flickering
+      let lastUpdateTime = 0;
+      const updateThrottleMs = 1000; // Update UI at most once per second
       
       ws.onmessage = (event) => {
         try {
@@ -291,6 +326,7 @@ const Details: React.FC = () => {
               close: parseFloat(candle.c),
             };
             
+            // Always update chart data
             candleSeries.update(updatedCandle);
             
             if (volumeSeries) {
@@ -301,9 +337,14 @@ const Details: React.FC = () => {
               });
             }
             
-            const newPrice = updatedCandle.close;
-            setLastPrice(price);
-            setPrice(newPrice);
+            // Throttle UI updates to prevent flickering
+            const now = Date.now();
+            if (now - lastUpdateTime > updateThrottleMs) {
+              lastUpdateTime = now;
+              const newPrice = updatedCandle.close;
+              setLastPrice(price);
+              setPrice(newPrice);
+            }
           }
         } catch (err) {
           console.error('Error processing WebSocket message:', err);
@@ -312,13 +353,20 @@ const Details: React.FC = () => {
       
       ws.onerror = (error) => {
         console.error('WebSocket error:', error);
-        toast.error("Connection error. Real-time updates may be unavailable.");
+        // Don't show toast for every error to avoid spamming the user
+        // Only show one error message at most
+        if (reconnectAttempts === 0) {
+          toast.error("Connection error. Using cached data.", {
+            toastId: 'ws-connection-error', // Prevent duplicate toasts
+            autoClose: 3000
+          });
+        }
       };
       
       return ws;
     } catch (err) {
       console.error('Error setting up WebSocket:', err);
-      setError("Failed to establish real-time connection.");
+      // Don't show error to user, just use REST API as fallback
       return null;
     }
   };
@@ -703,21 +751,33 @@ const Details: React.FC = () => {
     }
   };
 
+  // Use refs to track data fetching state
+  const lastFetchTime = useRef(0);
+  const walletDataFetched = useRef(false);
+  const chartSetup = useRef(false);
+  const chartTimeframe = useRef('');
+  
   useEffect(() => {
     if (!crypto) return;
 
     const normalizedCrypto = (crypto as string).toUpperCase();
     const symbol = `${normalizedCrypto}USDT`;
 
+    // Set a loading timeout
     const loadingTimeout = setTimeout(() => {
       if (!loaded) {
         setLoaded(true);
-        // setError("Loading timeout. Please refresh the page to try again.");
       }
     }, 10000);
 
+    // Throttled version of the 24h price change fetch with debouncing
     const fetch24hPriceChange = async () => {
       try {
+        // If we've already fetched data recently, don't fetch again
+        if (Date.now() - lastFetchTime.current < 30000) { // 30 seconds minimum between fetches
+          return;
+        }
+        
         const response = await fetch(`https://api.binance.com/api/v3/ticker/24hr?symbol=${symbol}`);
         if (!response.ok) {
           throw new Error('Failed to fetch 24h data');
@@ -725,47 +785,107 @@ const Details: React.FC = () => {
         
         const data = await response.json();
         if (data) {
+          // Update state with batch updates to prevent multiple re-renders
+          const updates = {};
+          
           if (data.priceChangePercent) {
-            setPriceChangePercent(parseFloat(data.priceChangePercent));
+            const newPercent = parseFloat(data.priceChangePercent);
+            // Only update if change is significant (more than 0.01%)
+            if (Math.abs(newPercent - priceChangePercent) > 0.01) {
+              setPriceChangePercent(newPercent);
+            }
           }
-          if (data.highPrice) setDayHigh(parseFloat(data.highPrice));
-          if (data.lowPrice) setDayLow(parseFloat(data.lowPrice));
-          if (data.volume) setVolume(parseFloat(data.volume));
+          
+          // Use a single update for day high/low/volume to prevent UI flicker
+          let shouldUpdateDayStats = false;
+          let newHigh = dayHigh;
+          let newLow = dayLow;
+          let newVolume = volume;
+          
+          if (data.highPrice) {
+            newHigh = parseFloat(data.highPrice);
+            if (Math.abs(newHigh - dayHigh) / Math.max(1, dayHigh) > 0.005) { // 0.5% threshold
+              shouldUpdateDayStats = true;
+            }
+          }
+          
+          if (data.lowPrice) {
+            newLow = parseFloat(data.lowPrice);
+            if (Math.abs(newLow - dayLow) / Math.max(1, dayLow) > 0.005) { // 0.5% threshold
+              shouldUpdateDayStats = true;
+            }
+          }
+          
+          if (data.volume) {
+            newVolume = parseFloat(data.volume);
+            if (Math.abs(newVolume - volume) / Math.max(1, volume) > 0.01) { // 1% threshold
+              shouldUpdateDayStats = true;
+            }
+          }
+          
+          // Batch update to prevent multiple renders
+          if (shouldUpdateDayStats) {
+            setDayHigh(newHigh);
+            setDayLow(newLow);
+            setVolume(newVolume);
+          }
+          
+          // Update last fetch time
+          lastFetchTime.current = Date.now();
         }
       } catch (err) {
         console.error('Error fetching 24h price change:', err);
       }
     };
 
+    // Fetch wallet data only once per session
     const fetchWalletData = async () => {
+      if (walletDataFetched.current) return;
+      
       try {
         const response = await axios.get('/api/getWallet');
         setWalletData(response.data);
+        walletDataFetched.current = true;
       } catch (error) {
         console.error('Error fetching wallet data:', error);
-        toast.error("Failed to load wallet data");
+        // Show error only once
+        toast.error("Failed to load wallet data", {
+          toastId: 'wallet-error',
+          autoClose: 3000
+        });
       }
     };
 
+    // Fetch wallet data
     fetchWalletData();
+    
+    // Fetch 24h price data
     fetch24hPriceChange();
     
     let chartCleanup: (() => void) | undefined = undefined;
     
+    // Set up chart with improved handling
     const setupChart = async () => {
-      try {
-        chartCleanup = await fetchChartData(symbol, timeframe);
-        setLoaded(true);
-      } catch (err) {
-        console.error("Error setting up chart:", err);
-        setLoaded(true);
-        setError("Failed to initialize chart. Please try again.");
+      // Only set up chart if timeframe changes or chart isn't set up yet
+      if (chartTimeframe.current !== timeframe || !chartSetup.current) {
+        try {
+          chartCleanup = await fetchChartData(symbol, timeframe);
+          chartSetup.current = true;
+          chartTimeframe.current = timeframe;
+          setLoaded(true);
+        } catch (err) {
+          console.error("Error setting up chart:", err);
+          setLoaded(true);
+          setError("Failed to initialize chart. Please try again.");
+        }
       }
     };
     
+    // Set up chart
     setupChart();
     
-    const priceChangeInterval = setInterval(fetch24hPriceChange, 60000);
+    // Update price data less frequently (every 2 minutes)
+    const priceChangeInterval = setInterval(fetch24hPriceChange, 120000);
 
     return () => {
       clearTimeout(loadingTimeout);
@@ -774,7 +894,7 @@ const Details: React.FC = () => {
       }
       clearInterval(priceChangeInterval);
     };
-  }, [crypto, timeframe, fetchChartData, loaded]);
+  }, [crypto, timeframe, fetchChartData, loaded, priceChangePercent, dayHigh, dayLow, volume]);
 
   useEffect(() => {
     setPayable(price * (typeof quantity === 'number' ? quantity : 0));

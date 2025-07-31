@@ -22,74 +22,186 @@ const Dashboard = () => {
     const paths = usePathname();
     const [ws, setWs] = useState<WebSocket | null>(null); // State to hold the WebSocket instance
 
+    // Use a ref to track the last update time for each symbol
+    const lastUpdateTimes = useRef<Record<string, number>>({});
+    // Use a ref to track if we've initialized the data
+    const isInitialized = useRef(false);
+    
     useEffect(() => {
-        const wsURL = 'wss://fstream.binance.com/ws/btcusdt@kline_1m';
-        const newWs = new WebSocket(wsURL);
-        setWs(newWs); // Save the WebSocket instance to state
-
-        newWs.onopen = () => {
-            setLoaded(true);
-            const initialCryptoList: CryptoData[] = [
-                { id: 1, name: "Bitcoin", symbol: "BTC", price: null },
-                { id: 2, name: "Ethereum", symbol: "ETH", price: null },
-                { id: 3, name: "Ripple", symbol: "XRP", price: null },
-                { id: 4, name: "Litecoin", symbol: "LTC", price: null },
-                { id: 5, name: "Cardano", symbol: "ADA", price: null },
-                { id: 6, name: "Polkadot", symbol: "DOT", price: null },
-                { id: 7, name: "Bitcoin Cash", symbol: "BCH", price: null },
-                { id: 8, name: "Chainlink", symbol: "LINK", price: null },
-                { id: 9, name: "Stellar", symbol: "XLM", price: null },
-            ];
-
-            const symbols = initialCryptoList.map(crypto => `${crypto.symbol.toLowerCase()}usdt@kline_1m`);
-
-            symbols.forEach(symbol => {
-                newWs.send(JSON.stringify({
-                    method: 'SUBSCRIBE',
-                    params: [`${symbol}`],
-                    id: 1,
-                }));
+        // Define the initial crypto list
+        const initialCryptoList: CryptoData[] = [
+            { id: 1, name: "Bitcoin", symbol: "BTC", price: null },
+            { id: 2, name: "Ethereum", symbol: "ETH", price: null },
+            { id: 3, name: "Ripple", symbol: "XRP", price: null },
+            { id: 4, name: "Litecoin", symbol: "LTC", price: null },
+            { id: 5, name: "Cardano", symbol: "ADA", price: null },
+            // Reduce the number of connections to prevent errors
+            // { id: 6, name: "Polkadot", symbol: "DOT", price: null },
+            // { id: 7, name: "Bitcoin Cash", symbol: "BCH", price: null },
+            // { id: 8, name: "Chainlink", symbol: "LINK", price: null },
+            // { id: 9, name: "Stellar", symbol: "XLM", price: null },
+        ];
+        
+        // Initialize crypto data with the initial list if not already initialized
+        if (!isInitialized.current) {
+            const initialMap = new Map<string, CryptoData>();
+            initialCryptoList.forEach(crypto => {
+                initialMap.set(`${crypto.symbol.toLowerCase()}usdt`, {
+                    id: crypto.id,
+                    name: crypto.name,
+                    symbol: `${crypto.symbol.toLowerCase()}usdt`,
+                    price: null
+                });
             });
+            setCryptoData(initialMap);
+            isInitialized.current = true;
+        }
+        
+        // Use a combined WebSocket connection instead of multiple connections
+        // Binance allows subscribing to multiple streams in one connection
+        const wsURL = 'wss://fstream.binance.com/ws';
+        const newWs = new WebSocket(wsURL);
+        setWs(newWs);
+        
+        // Set a connection timeout
+        const connectionTimeout = setTimeout(() => {
+            if (newWs.readyState !== WebSocket.OPEN) {
+                console.warn('WebSocket connection timeout');
+                setLoaded(true); // Show UI even if connection fails
+                // Fall back to REST API
+                fetchPricesViaREST(initialCryptoList);
+            }
+        }, 5000);
+        
+        newWs.onopen = () => {
+            clearTimeout(connectionTimeout);
+            setLoaded(true);
+            
+            // Create a list of symbols to subscribe to
+            const symbols = initialCryptoList.map(crypto => `${crypto.symbol.toLowerCase()}usdt@kline_1m`);
+            
+            // Subscribe to all symbols in a single message
+            newWs.send(JSON.stringify({
+                method: 'SUBSCRIBE',
+                params: symbols,
+                id: 1,
+            }));
         };
-
+        
+        // Throttle updates to prevent UI flickering
+        const updateThrottleMs = 2000; // Update UI at most once every 2 seconds
+        
         newWs.onmessage = (event) => {
-            const message = JSON.parse(event.data);
-
-            if (message && message.k && message.k.c) {
-                const symbol = message.s.toLowerCase();
-                const price = parseFloat(message.k.c);
-
-                setCryptoData(prevCryptoData => {
-                    const updatedCryptoData = new Map(prevCryptoData);
-
-                    if (updatedCryptoData.has(symbol)) {
-                        const existingData = updatedCryptoData.get(symbol)!;
-                        updatedCryptoData.set(symbol, {
-                            ...existingData,
-                            price: price.toFixed(2),
-                        });
-                    } else {
-                        updatedCryptoData.set(symbol, {
-                            id: prevCryptoData.size + 1,
-                            name: symbol.toUpperCase(),
-                            symbol: symbol,
-                            price: price.toFixed(2),
+            try {
+                const message = JSON.parse(event.data);
+                
+                // Handle subscription response
+                if (message.result === undefined && message.k && message.k.c) {
+                    const symbol = message.s.toLowerCase();
+                    const price = parseFloat(message.k.c);
+                    const now = Date.now();
+                    
+                    // Only update if enough time has passed since last update for this symbol
+                    if (!lastUpdateTimes.current[symbol] || now - lastUpdateTimes.current[symbol] > updateThrottleMs) {
+                        lastUpdateTimes.current[symbol] = now;
+                        
+                        setCryptoData(prevCryptoData => {
+                            const updatedCryptoData = new Map(prevCryptoData);
+                            
+                            if (updatedCryptoData.has(symbol)) {
+                                const existingData = updatedCryptoData.get(symbol)!;
+                                updatedCryptoData.set(symbol, {
+                                    ...existingData,
+                                    price: price.toFixed(2),
+                                });
+                            } else {
+                                updatedCryptoData.set(symbol, {
+                                    id: prevCryptoData.size + 1,
+                                    name: symbol.toUpperCase(),
+                                    symbol: symbol,
+                                    price: price.toFixed(2),
+                                });
+                            }
+                            
+                            return updatedCryptoData;
                         });
                     }
-
-                    return updatedCryptoData;
-                });
+                }
+            } catch (err) {
+                console.error('Error processing WebSocket message:', err);
             }
         };
-
+        
+        // Handle WebSocket errors gracefully
         newWs.onerror = (error) => {
             console.error('WebSocket error:', error);
+            // Fall back to REST API
+            fetchPricesViaREST(initialCryptoList);
         };
-
+        
+        // Handle WebSocket closure gracefully
+        newWs.onclose = () => {
+            console.log('WebSocket connection closed');
+            // Fall back to REST API
+            fetchPricesViaREST(initialCryptoList);
+        };
+        
+        // Fallback function to fetch prices via REST API
+        const fetchPricesViaREST = async (cryptoList: CryptoData[]) => {
+            try {
+                // Fetch prices for each crypto in the list
+                const promises = cryptoList.map(async (crypto) => {
+                    const symbol = `${crypto.symbol}USDT`;
+                    try {
+                        const response = await fetch(`https://api.binance.com/api/v3/ticker/price?symbol=${symbol}`);
+                        if (response.ok) {
+                            const data = await response.json();
+                            return {
+                                symbol: crypto.symbol.toLowerCase() + 'usdt',
+                                price: parseFloat(data.price).toFixed(2),
+                                id: crypto.id,
+                                name: crypto.name
+                            };
+                        }
+                    } catch (err) {
+                        console.error(`Error fetching price for ${symbol}:`, err);
+                    }
+                    return null;
+                });
+                
+                // Wait for all requests to complete
+                const results = await Promise.all(promises);
+                
+                // Update crypto data with the results
+                setCryptoData(prevCryptoData => {
+                    const updatedCryptoData = new Map(prevCryptoData);
+                    
+                    results.forEach(result => {
+                        if (result) {
+                            updatedCryptoData.set(result.symbol, {
+                                id: result.id,
+                                name: result.name,
+                                symbol: result.symbol,
+                                price: result.price,
+                            });
+                        }
+                    });
+                    
+                    return updatedCryptoData;
+                });
+            } catch (err) {
+                console.error('Error fetching prices via REST:', err);
+            }
+        };
+        
+        // Clean up function
         return () => {
-            newWs.close();
+            clearTimeout(connectionTimeout);
+            if (newWs.readyState === WebSocket.OPEN || newWs.readyState === WebSocket.CONNECTING) {
+                newWs.close();
+            }
         };
-    }, [paths]);
+    }, []);
 
     useEffect(() => {
         const fetchHoldings = async () => {
