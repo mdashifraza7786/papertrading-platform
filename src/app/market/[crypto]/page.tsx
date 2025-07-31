@@ -1,5 +1,5 @@
 "use client"
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useCallback } from 'react';
 import { createChart, ColorType, LineStyle, Time } from 'lightweight-charts';
 import axios from 'axios';
 import { useParams } from 'next/navigation';
@@ -99,6 +99,7 @@ const Details: React.FC = () => {
     fetchChartData(symbol, newTimeframe);
   };
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchChartData = async (symbol: string, interval: string) => {
     if (!chartContainerRef.current) return undefined;
     
@@ -894,7 +895,8 @@ const Details: React.FC = () => {
       }
       clearInterval(priceChangeInterval);
     };
-  }, [crypto, timeframe, fetchChartData, loaded, priceChangePercent, dayHigh, dayLow, volume]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [crypto, timeframe, loaded]);
 
   useEffect(() => {
     setPayable(price * (typeof quantity === 'number' ? quantity : 0));

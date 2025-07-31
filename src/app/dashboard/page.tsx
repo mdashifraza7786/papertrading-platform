@@ -1,5 +1,5 @@
 "use client"
-import { useEffect, useState, Suspense } from "react";
+import { useEffect, useState, useRef, Suspense } from "react";
 import Loader from "@/app/loding";
 import HoldingStock from "@/components/HoldingStock";
 import Stocks, { CryptoData as StocksCryptoData } from "@/components/Stocks";
