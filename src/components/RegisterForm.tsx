@@ -81,93 +81,129 @@ const RegisterForm = (): React.ReactNode => {
 
     return (
         <>
-            <form onSubmit={handleLogin}>
-                <div className="bg-white shadow-[0_0_5px_1px_#fff] md:w-[70%] px-10 py-5 flex gap-10 flex-col">
-                    <div className="relative">
-                        <input
-                            type="text"
-                            id="namefield"
-                            className={`border-b-2 peer focus:outline-none border-gray-400 w-full py-3`}
-                            value={name}
-                            onChange={handleNameChange}
-                            name="name"
-                        />
-                        <label
-                            htmlFor="namefield"
-                            className={`absolute left-0 -translate-y-1/2 transition-all cursor-text select-none duration-200 ${name ? '-top-[7px] text-green-600' : 'top-1/2'}`}
-                        >
-                            Enter Your Name
+            <form onSubmit={handleLogin} className="space-y-6">
+                <div className="space-y-5">
+                    <div className="space-y-2">
+                        <label htmlFor="namefield" className="block text-sm font-medium text-gray-700">
+                            Full Name
                         </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"></path>
+                                </svg>
+                            </div>
+                            <input
+                                type="text"
+                                id="namefield"
+                                className="input-field pl-10"
+                                value={name}
+                                onChange={handleNameChange}
+                                name="name"
+                                placeholder="John Doe"
+                                required
+                            />
+                        </div>
                     </div>
-                    <div className="relative">
-                        <input
-                            type="text"
-                            id="emailfield"
-                            className={`border-b-2 peer focus:outline-none border-gray-400 w-full py-3`}
-                            value={email}
-                            onChange={handleEmailChange}
-                            name="email"
-                        />
-                        <label
-                            htmlFor="emailfield"
-                            className={`absolute left-0 -translate-y-1/2 transition-all cursor-text select-none duration-200 ${email ? '-top-[7px] text-green-600' : 'top-1/2'}`}
-                        >
-                            Enter Valid Email
+                    
+                    <div className="space-y-2">
+                        <label htmlFor="emailfield" className="block text-sm font-medium text-gray-700">
+                            Email Address
                         </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path>
+                                </svg>
+                            </div>
+                            <input
+                                type="email"
+                                id="emailfield"
+                                className="input-field pl-10"
+                                value={email}
+                                onChange={handleEmailChange}
+                                name="email"
+                                placeholder="name@example.com"
+                                required
+                            />
+                        </div>
                     </div>
-                    <div className="relative">
-                        <input
-                            type="password"
-                            id="passwordfield"
-                            className={`border-b-2 peer focus:outline-none border-gray-400 w-full py-3`}
-                            value={password}
-                            onChange={handlePasswordChange}
-                            name="password"
-                        />
-                        <label
-                            htmlFor="passwordfield"
-                            className={`absolute left-0 -translate-y-1/2 transition-all cursor-text select-none duration-200 ${password ? '-top-[7px] text-green-600' : 'top-1/2'}`}
-                        >
-                            Enter Your Password
+                    
+                    <div className="space-y-2">
+                        <label htmlFor="passwordfield" className="block text-sm font-medium text-gray-700">
+                            Password
                         </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path>
+                                </svg>
+                            </div>
+                            <input
+                                type="password"
+                                id="passwordfield"
+                                className="input-field pl-10"
+                                value={password}
+                                onChange={handlePasswordChange}
+                                name="password"
+                                placeholder="••••••••"
+                                required
+                            />
+                        </div>
                     </div>
-                    <div className="relative">
-                        <input
-                            type="password"
-                            id="cpasswordfield"
-                            className={`border-b-2 peer focus:outline-none border-gray-400 w-full py-3`}
-                            value={confirmpassword}
-                            onChange={handleConfirmpasswordChange}
-                            name="confirmPassword"
-                        />
-                        <label
-                            htmlFor="cpasswordfield"
-                            className={`absolute left-0 -translate-y-1/2 transition-all cursor-text select-none duration-200 ${confirmpassword ? '-top-[7px] text-green-600' : 'top-1/2'}`}
-                        >
-                            Enter Confirm Password
+                    
+                    <div className="space-y-2">
+                        <label htmlFor="cpasswordfield" className="block text-sm font-medium text-gray-700">
+                            Confirm Password
                         </label>
+                        <div className="relative">
+                            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg className="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"></path>
+                                </svg>
+                            </div>
+                            <input
+                                type="password"
+                                id="cpasswordfield"
+                                className="input-field pl-10"
+                                value={confirmpassword}
+                                onChange={handleConfirmpasswordChange}
+                                name="confirmPassword"
+                                placeholder="••••••••"
+                                required
+                            />
+                        </div>
                     </div>
-                    <div className='relative'>
-                        <button className='bg-green-600 text-white py-2 text-lg px-10 font-semibold  outline outline-2 outline-offset-2 outline-green-600' disabled={loading ? true : false}>
+                </div>
+                
+                <div>
+                    <button 
+                        type="submit" 
+                        className="button-primary w-full flex justify-center items-center" 
+                        disabled={loading}
+                    >
                         {loading ? (
                             <ThreeDots
                                 visible={true}
-                                height="30"
-                                width="42"
+                                height="24"
+                                width="50"
                                 color="#ffffff"
                                 radius="3"
                                 ariaLabel="three-dots-loading"
-                                wrapperStyle={{}}
-                                wrapperClass=""
                             />
                         ) : (
-                            'Create'
+                            'Create Account'
                         )}
-                        </button>
-                    </div>
-                    <div className='flex flex-col gap-2'>
-                        <p>Already have an account ? <Link href={"/login"} className='text-green-600 font-semibold'>Login here</Link></p>
-                    </div>
+                    </button>
+                </div>
+                
+                <div className="text-center mt-6 pt-6 border-t border-gray-100">
+                    <p className="text-gray-600">
+                        Already have an account?{' '}
+                        <Link href="/login" className="text-green-600 hover:text-green-700 font-medium">
+                            Sign in
+                        </Link>
+                    </p>
                 </div>
             </form>
             <ToastContainer />
