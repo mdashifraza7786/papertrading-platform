@@ -26,15 +26,15 @@ const Dashboard = () => {
     const lastUpdateTimes = useRef<Record<string, number>>({});
     // Use a ref to track if we've initialized the data
     const isInitialized = useRef(false);
-    
+
     useEffect(() => {
         // Define the initial crypto list
-        const initialCryptoList: CryptoData[] = [
-            { id: 1, name: "Bitcoin", symbol: "BTC", price: null },
-            { id: 2, name: "Ethereum", symbol: "ETH", price: null },
-            { id: 3, name: "Ripple", symbol: "XRP", price: null },
-            { id: 4, name: "Litecoin", symbol: "LTC", price: null },
-            { id: 5, name: "Cardano", symbol: "ADA", price: null },
+            const initialCryptoList: CryptoData[] = [
+                { id: 1, name: "Bitcoin", symbol: "BTC", price: null },
+                { id: 2, name: "Ethereum", symbol: "ETH", price: null },
+                { id: 3, name: "Ripple", symbol: "XRP", price: null },
+                { id: 4, name: "Litecoin", symbol: "LTC", price: null },
+                { id: 5, name: "Cardano", symbol: "ADA", price: null },
             // Reduce the number of connections to prevent errors
             // { id: 6, name: "Polkadot", symbol: "DOT", price: null },
             // { id: 7, name: "Bitcoin Cash", symbol: "BCH", price: null },
@@ -79,59 +79,59 @@ const Dashboard = () => {
             
             // Create a list of symbols to subscribe to
             const symbols = initialCryptoList.map(crypto => `${crypto.symbol.toLowerCase()}usdt@kline_1m`);
-            
+
             // Subscribe to all symbols in a single message
-            newWs.send(JSON.stringify({
-                method: 'SUBSCRIBE',
+                newWs.send(JSON.stringify({
+                    method: 'SUBSCRIBE',
                 params: symbols,
-                id: 1,
-            }));
+                    id: 1,
+                }));
         };
         
         // Throttle updates to prevent UI flickering
         const updateThrottleMs = 2000; // Update UI at most once every 2 seconds
-        
+
         newWs.onmessage = (event) => {
             try {
-                const message = JSON.parse(event.data);
-                
+            const message = JSON.parse(event.data);
+
                 // Handle subscription response
                 if (message.result === undefined && message.k && message.k.c) {
-                    const symbol = message.s.toLowerCase();
-                    const price = parseFloat(message.k.c);
+                const symbol = message.s.toLowerCase();
+                const price = parseFloat(message.k.c);
                     const now = Date.now();
                     
                     // Only update if enough time has passed since last update for this symbol
                     if (!lastUpdateTimes.current[symbol] || now - lastUpdateTimes.current[symbol] > updateThrottleMs) {
                         lastUpdateTimes.current[symbol] = now;
-                        
-                        setCryptoData(prevCryptoData => {
-                            const updatedCryptoData = new Map(prevCryptoData);
-                            
-                            if (updatedCryptoData.has(symbol)) {
-                                const existingData = updatedCryptoData.get(symbol)!;
-                                updatedCryptoData.set(symbol, {
-                                    ...existingData,
-                                    price: price.toFixed(2),
-                                });
-                            } else {
-                                updatedCryptoData.set(symbol, {
-                                    id: prevCryptoData.size + 1,
-                                    name: symbol.toUpperCase(),
-                                    symbol: symbol,
-                                    price: price.toFixed(2),
-                                });
-                            }
-                            
-                            return updatedCryptoData;
+
+                setCryptoData(prevCryptoData => {
+                    const updatedCryptoData = new Map(prevCryptoData);
+
+                    if (updatedCryptoData.has(symbol)) {
+                        const existingData = updatedCryptoData.get(symbol)!;
+                        updatedCryptoData.set(symbol, {
+                            ...existingData,
+                            price: price.toFixed(2),
                         });
+                    } else {
+                        updatedCryptoData.set(symbol, {
+                            id: prevCryptoData.size + 1,
+                            name: symbol.toUpperCase(),
+                            symbol: symbol,
+                            price: price.toFixed(2),
+                        });
+                    }
+
+                    return updatedCryptoData;
+                });
                     }
                 }
             } catch (err) {
                 console.error('Error processing WebSocket message:', err);
             }
         };
-        
+
         // Handle WebSocket errors gracefully
         newWs.onerror = (error) => {
             console.error('WebSocket error:', error);
@@ -198,7 +198,7 @@ const Dashboard = () => {
         return () => {
             clearTimeout(connectionTimeout);
             if (newWs.readyState === WebSocket.OPEN || newWs.readyState === WebSocket.CONNECTING) {
-                newWs.close();
+            newWs.close();
             }
         };
     }, []);
@@ -358,7 +358,7 @@ const Dashboard = () => {
                                 </Link>
                             </div>
                             
-                            {loaded ? (
+                    {loaded ? (
                                 holdingsData.length > 0 ? (
                                     <div className="bg-white rounded-xl shadow-md overflow-hidden border border-gray-100">
                                         <HoldingStock holdingsData={holdingsData} cryptoData={cryptoDataArray} />
