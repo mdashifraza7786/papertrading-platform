@@ -36,7 +36,7 @@ const Stocks = ({ data }: { data: CryptoData[] }) => {
                                             </div>
                                             <div>
                                                 <p className="font-medium text-gray-900">{getCryptoName(crypto.name.replace("USDT",""))}</p>
-                                                <p className="text-xs text-gray-500">{crypto.name.replace("USDT","")}</p>
+                                                <p className="font-medium text-gray-900">{crypto.name.replace("USDT","")}</p>
                                             </div>
                                         </Link>
                                     </td>

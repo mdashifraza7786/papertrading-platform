@@ -1,6 +1,6 @@
 import mongoose from 'mongoose';
 
-const MONGODBURI = "mongodb+srv://mdashifraza222jj:mraH6HF3gYJQ8t0f@papertradingcluster.rrxcgoy.mongodb.net/papertrading";
+const MONGODBURI = process.env.MONGODB_URI;
 
 const connectDB = async (): Promise<void | any> => {
     if (mongoose.connections[0].readyState) {

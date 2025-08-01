@@ -33,7 +33,6 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
                         throw new CredentialsSignin('Invalid Email or Password');
                     }
 
-                    // Import bcrypt dynamically only on the server
                     const { compare } = await import('bcrypt');
                     const isMatch = await compare(password, user.password);
 

@@ -32,11 +32,10 @@ const Dashboard = () => {
                 { id: 3, name: "Ripple", symbol: "XRP", price: null },
                 { id: 4, name: "Litecoin", symbol: "LTC", price: null },
                 { id: 5, name: "Cardano", symbol: "ADA", price: null },
-            // Reduce the number of connections to prevent errors
-            // { id: 6, name: "Polkadot", symbol: "DOT", price: null },
-            // { id: 7, name: "Bitcoin Cash", symbol: "BCH", price: null },
-            // { id: 8, name: "Chainlink", symbol: "LINK", price: null },
-            // { id: 9, name: "Stellar", symbol: "XLM", price: null },
+                { id: 6, name: "Polkadot", symbol: "DOT", price: null },
+                { id: 7, name: "Bitcoin Cash", symbol: "BCH", price: null },
+                { id: 8, name: "Chainlink", symbol: "LINK", price: null },
+                { id: 9, name: "Stellar", symbol: "XLM", price: null }, 
         ];
         
         if (!isInitialized.current) {
@@ -431,7 +430,7 @@ const Dashboard = () => {
                                         <Link key={crypto.id} href={`/market/${crypto.symbol}`} className="flex items-center justify-between p-3 rounded-lg hover:bg-gray-50 transition-colors">
                                             <div className="flex items-center">
                                                 <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center mr-3 font-mono text-sm">
-                                                    {crypto.symbol.substring(0, 2)}
+                                                    {crypto.symbol.toLocaleUpperCase().replaceAll("USDT", "")}
                                                 </div>
                                                 <div>
                                                     <h3 className="font-medium text-gray-900">{crypto.name}</h3>

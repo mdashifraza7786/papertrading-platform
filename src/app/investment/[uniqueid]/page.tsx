@@ -1,20 +1,11 @@
 "use client"
-import React, { useEffect, useRef, useState } from 'react';
-import { createChart, Time } from 'lightweight-charts';
+import React, { useEffect, useState, Suspense } from 'react';
+import { useParams, useRouter } from 'next/navigation';
 import axios from 'axios';
-import { useParams } from 'next/navigation';
 import Loader from '@/app/loding';
-import { getCryptoName } from '@/util/getCryptoName';
-import { ToastContainer, toast } from 'react-toastify';
-import { ThreeDots } from 'react-loader-spinner';
-
-interface CandlestickData {
-  time: Time;
-  open: number;
-  high: number;
-  low: number;
-  close: number;
-}
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import InvestmentDetails from '@/components/investment/InvestmentDetails';
 
 interface Investment {
   uniqueid: number;
@@ -25,237 +16,85 @@ interface Investment {
   __v: number;
 }
 
-const Details: React.FC = () => {
+const InvestmentDetailPage: React.FC = () => {
   const { uniqueid } = useParams();
-  const chartContainerRef = useRef<HTMLDivElement>(null);
-  const [price, setPrice] = useState<number>(0);
-  const [quantity, setQuantity] = useState<number | string>(0.1);
+  const router = useRouter();
+  const [investment, setInvestment] = useState<Investment | null>(null);
   const [loaded, setLoaded] = useState<boolean>(false);
-  const [inputError, setInputError] = useState<string>('');
-  const [walletData, setWalletData] = useState<number>(0);
-  const [loading, setLoading] = useState<boolean>(false);
-  const [investmentLoad, setInvestmentLoad] = useState<Investment[] | null>(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     const getInvestment = async () => {
       try {
-        const res = await axios.get('/api/investment?investment=' + uniqueid);
-        if(res.data==null){
-          window.location.href = "/investment";
-          return
+        const res = await axios.get(`/api/investment?investment=${uniqueid}`);
+        if (res.data === null || res.data.length === 0) {
+          setError("Investment not found");
+          setTimeout(() => {
+            router.push("/investment");
+          }, 2000);
+          return;
         }
-        setInvestmentLoad(res.data);
+        setInvestment(res.data[0]);
+        setLoaded(true);
       } catch (error) {
         console.error('Error fetching investment:', error);
+        setError("Failed to load investment details");
+        setLoaded(true);
       }
     };
+
     if (uniqueid) {
       getInvestment();
     }
-  }, [uniqueid,walletData]);
+  }, [uniqueid, router]);
 
-  const symbol = investmentLoad ? investmentLoad[0]?.symbol : null;
-  const havingquantities = investmentLoad ? parseFloat(investmentLoad[0]?.quantity.$numberDecimal) : 0;
- 
-
-
-  useEffect(() => {
-    if (!symbol) {
-      return
-    }
-
-    const selectedSymbol = symbol.toLowerCase() + "usdt";
-    const forhistory = selectedSymbol.toUpperCase();
-
-    const chartProperties = {
-      timeScale: {
-        timeVisible: true,
-        secondsVisible: false,
-      }
-    };
-
-    const chart = createChart(chartContainerRef.current!, chartProperties);
-    const candleSeries = chart.addCandlestickSeries();
-
-    const convertToIST = (timestamp: number) => {
-      const date = new Date(timestamp);
-      date.toLocaleString('en-IN', { timeZone: 'Asia/Kolkata' });
-      return date.getTime();
-    };
-
-    const fetchWalletData = async () => {
-      try {
-        const response = await axios.get('/api/getWallet');
-        setWalletData(response.data);
-        setLoaded(true);
-      } catch (error) {
-        console.error('Error fetching wallet data:', error);
-      }
-    };
-
-    fetchWalletData();
-
-    const fetchChartData = async () => {
-      try {
-        const response = await fetch(`https://api.binance.com/api/v3/klines?symbol=${forhistory}&interval=1m&limit=19999000000`);
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const responseData = await response.json();
-
-        if (!Array.isArray(responseData)) {
-          throw new Error('Expected an array in response, but received something else.');
-        }
-
-        const cdata: CandlestickData[] = responseData.map((d: number[]) => ({
-          time: convertToIST(Math.round(d[0] / 1000)) as Time,
-          open: Number(d[1]),
-          high: Number(d[2]),
-          low: Number(d[3]),
-          close: Number(d[4]),
-        }));
-
-        candleSeries.setData(cdata);
-
-      } catch (error) {
-        console.error('Error fetching historical data:', error);
-      }
-    };
-
-    fetchChartData();
-
-    const wsURL = `wss://fstream.binance.com/ws/${selectedSymbol}@kline_1m`;
-    const ws = new WebSocket(wsURL);
-
-    ws.onopen = () => {
-    };
-
-    ws.onmessage = (event) => {
-      const msg = JSON.parse(event.data);
-      const kLine = msg.k;
-      const pl: CandlestickData = {
-        time: convertToIST(Math.round(kLine.t / 1000)) as Time,
-        open: parseFloat(kLine.o),
-        high: parseFloat(kLine.h),
-        low: parseFloat(kLine.l),
-        close: parseFloat(kLine.c),
-      };
-      candleSeries.update(pl);
-      setPrice(pl.close);
-    };
-
-    ws.onclose = () => {
-      console.log('WebSocket closed');
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-    };
- 
-    return () => {
-      ws.close();
-      chart.remove();
-    };
-  }, [symbol]);
-
-
-
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const newQuantity = parseFloat(e.target.value);
-    if (!isNaN(newQuantity)) {
-      setQuantity(newQuantity);
-    } else {
-      setQuantity('');
-    }
-  };
-
-  const SellNowHandle = async () => {
-    setLoading(true);
-    if (typeof quantity !== 'number' || quantity <= 0 || quantity > havingquantities) {
-      setLoading(false);
-      toast.error("Invalid quantity or quantity exceeds holdings");
-      return;
-    }
-    try {
-      const response = await axios.post('/api/sellStock', {
-        id: uniqueid,
-        priceat:price
-      });
-      window.location.href = "/investment"
-      setWalletData(response.data);
-      setLoading(false);
-    } catch (error) {
-      console.error('Error fetching wallet data:', error);
-    }
+  const handleSellComplete = () => {
+    setTimeout(() => {
+      router.push("/investment");
+    }, 1500);
   };
 
   return (
-    <>
-      {!loaded && (
-        <div className='fixed w-screen h-[89vh] left-0 bottom-0 bg-white backdrop-blur-xl z-50'>
-          <Loader />
-        </div>
-      )}
-      {symbol && (
-        <div className='mb-10'>
-          <h1 className='md:text-3xl text-xl font-semibold px-5 md:px-0'>{getCryptoName(symbol)} ({symbol})</h1>
-        </div>
-      )}
-      <div className='md:flex justify-between gap'>
-        <div id="chart-container" className='w-[100%] pb-56 md:pb-0 md:w-[75%] border-2 overflow-hidden rounded-lg -z-d10 border-primary flex justify-center items-center'>
-          <div ref={chartContainerRef} style={{ width: '100%', height: '35.8rem' }} />
-        </div>
-        <div className="md:h-full md:w-[24%] w-[100%] fixed md:relative bottom-0 left-0 z-50">
-          <div className='md:h-[30rem] h-[12rem] relative px-5 md:py-3 pt-6 bg-white shadow-[0_0_5px_1px_#ddd] rounded-lg'>
-            <div>
-              <h1 className='text-black font-semibold text-lg uppercase tracking-widest md:block hidden'>{getCryptoName(symbol as string)}</h1>
-              <h3 className='text-sm md:block hidden'>${price.toFixed(2)}</h3>
-              <div className='bg-gray-300 h-[1.5px] my-2 w-full absolute left-0 md:block hidden'></div>
-              <div className='mt-10 flex gap-5'>
-                <input
-                  type="number"
-                  onChange={handleInputChange}
-                  value={havingquantities}
-                  disabled
-                  readOnly
-                  className={`w-[100%] h-[40px] rounded-lg text-xl text-center outline-none ${inputError ? 'border-[1.5px] border-red-500' : ' border-[1.5px] border-gray-400'}`}
-                />
-              </div>
-              {inputError && <p className="text-red-500 mt-1">{inputError}</p>}
-            </div>
-
-            <div className='absolute bottom-5 left-0 w-full'>
-              <div className='flex w-[100%] justify-between text-[12px] px-6'>
-                <p className='font-semibold text-gray-700'>Balance: ${walletData.toFixed(2)}</p>
-                <p className='font-semibold text-gray-700 '>Estimate : ${(havingquantities as number* price).toFixed(2)}</p>
-              </div>
-              <div className='flex justify-center items-center' >
-                <button onClick={SellNowHandle} className={`w-[88%] flex justify-center items-center rounded-lg bg-red-600 hover:bg-red-700 text-white py-2 mt-5 ${quantity as number > 0 && Number(quantity) <= havingquantities ? "" : "disabled:cursor-not-allowed disabled:bg-red-400 disabled:text-gray-200"}`} disabled={quantity as number > 0 && Number(quantity) <= havingquantities ? false : true}>
-                  {loading ? (
-                    <ThreeDots
-                      visible={true}
-                      height={23}
-                      width={50}
-                      color="#ffffff"
-                      radius="3"
-                      ariaLabel="three-dots-loading"
-                      wrapperStyle={{}}
-                      wrapperClass=""
-                    />
-                  ) : (
-                    'Sell'
-                  )}
-                </button>
-              </div>
-            </div>
+    <Suspense fallback={<Loader />}>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-8">
+          <div className="flex items-center">
+            <button 
+              onClick={() => router.push("/investment")}
+              className="mr-4 p-2 rounded-full hover:bg-gray-100"
+            >
+              <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 19l-7-7 7-7"></path>
+              </svg>
+            </button>
+            <h1 className="text-2xl md:text-3xl font-bold text-gray-900">Investment Details</h1>
           </div>
         </div>
+
+        {!loaded ? (
+          <div className="flex justify-center items-center h-64">
+            <Loader />
+          </div>
+        ) : error ? (
+          <div className="bg-red-50 border border-red-200 text-red-800 rounded-lg p-4">
+            <div className="flex items-center">
+              <svg className="w-5 h-5 mr-2 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+              </svg>
+              <span>{error}</span>
+            </div>
+          </div>
+        ) : (
+          <InvestmentDetails 
+            investment={investment} 
+            uniqueid={uniqueid as string} 
+            onSell={handleSellComplete} 
+          />
+        )}
       </div>
-      <ToastContainer />
-    </>
+      <ToastContainer position="bottom-right" />
+    </Suspense>
   );
 };
 
-export default Details;
+export default InvestmentDetailPage;
