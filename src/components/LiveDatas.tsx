@@ -1,4 +1,3 @@
-// WebSocketPriceComponent.tsx
 import React, { useEffect, useState } from 'react';
 
 interface PriceData {
@@ -23,7 +22,7 @@ const LiveDatas: React.FC<WebSocketPriceComponentProps> = ({ symbols, onPriceUpd
           symbol: data.s,
           price: parseFloat(data.c),
         };
-        onPriceUpdate([newPrice]); // Update parent component state with new price data
+        onPriceUpdate([newPrice]); 
       };
 
       ws.onerror = (error) => {

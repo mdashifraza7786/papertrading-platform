@@ -25,7 +25,7 @@ interface HoldingData {
 
 const Investment = () => {
     const [cryptoData, setCryptoData] = useState<Map<string, CryptoData>>(new Map());
-    const [holdingsData, setHoldingsData] = useState<HoldingData[]>([]); // Updated useState declaration
+    const [holdingsData, setHoldingsData] = useState<HoldingData[]>([]); 
     const [loaded, setLoaded] = useState<boolean>(false);
     const paths = usePathname();
     const [ws, setWs] = useState<WebSocket | null>(null);

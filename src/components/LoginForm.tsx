@@ -26,7 +26,7 @@ const LoginForm = (): React.ReactNode => {
         event.preventDefault();
 
         try {
-            setLoading(true); // Start showing loading indicator
+            setLoading(true);
             const formData = new FormData(event.currentTarget);
             const email = formData.get('email') as string;
             const password = formData.get('password') as string;

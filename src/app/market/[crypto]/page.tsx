@@ -99,7 +99,6 @@ const Details: React.FC = () => {
     fetchChartData(symbol, newTimeframe);
   };
 
-  // eslint-disable-next-line react-hooks/exhaustive-deps
   const fetchChartData = async (symbol: string, interval: string) => {
     if (!chartContainerRef.current) return undefined;
     
@@ -277,7 +276,7 @@ const Details: React.FC = () => {
       
       // Create a WebSocket connection if one doesn't exist already
       // Using a more reliable approach with connection management
-      const ws = new WebSocket(`wss://stream.binance.com:9443/ws/${symbol.toLowerCase()}@kline_${interval}`);
+      const ws = new WebSocket(`wss://fstream.binance.com/ws/${symbol.toLowerCase()}@kline_${interval}`);
       
       // Add connection timeout
       const connectionTimeout = setTimeout(() => {

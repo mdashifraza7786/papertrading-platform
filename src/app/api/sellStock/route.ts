@@ -59,7 +59,6 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Transaction update failed." });
         }
 
-        // Update user balance directly without fetching and saving again
         const updateResult = await UserModel.updateOne(
             { email },
             { $inc: { balance: amountToUpdate } },

@@ -68,7 +68,7 @@ export const getCryptoName =(symbol:string) =>{
 }
 
 export const cryptoItems = [
-    { id: 1, name: "Bitcoin", symbol: "BTC", price: null },
+{ id: 1, name: "Bitcoin", symbol: "BTC", price: null },
 { id: 2, name: "Ethereum", symbol: "ETH", price: null },
 { id: 3, name: "Ripple", symbol: "XRP", price: null },
 { id: 4, name: "Litecoin", symbol: "LTC", price: null },

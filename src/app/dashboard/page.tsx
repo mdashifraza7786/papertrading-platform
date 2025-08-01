@@ -20,15 +20,12 @@ const Dashboard = () => {
     const [holdingsData, setHoldingsData] = useState<any[]>([]);
     const [loaded, setLoaded] = useState<boolean>(false);
     const paths = usePathname();
-    const [ws, setWs] = useState<WebSocket | null>(null); // State to hold the WebSocket instance
+    const [ws, setWs] = useState<WebSocket | null>(null); 
 
-    // Use a ref to track the last update time for each symbol
     const lastUpdateTimes = useRef<Record<string, number>>({});
-    // Use a ref to track if we've initialized the data
     const isInitialized = useRef(false);
 
     useEffect(() => {
-        // Define the initial crypto list
             const initialCryptoList: CryptoData[] = [
                 { id: 1, name: "Bitcoin", symbol: "BTC", price: null },
                 { id: 2, name: "Ethereum", symbol: "ETH", price: null },
@@ -42,7 +39,6 @@ const Dashboard = () => {
             // { id: 9, name: "Stellar", symbol: "XLM", price: null },
         ];
         
-        // Initialize crypto data with the initial list if not already initialized
         if (!isInitialized.current) {
             const initialMap = new Map<string, CryptoData>();
             initialCryptoList.forEach(crypto => {
@@ -57,18 +53,14 @@ const Dashboard = () => {
             isInitialized.current = true;
         }
         
-        // Use a combined WebSocket connection instead of multiple connections
-        // Binance allows subscribing to multiple streams in one connection
         const wsURL = 'wss://fstream.binance.com/ws';
         const newWs = new WebSocket(wsURL);
         setWs(newWs);
         
-        // Set a connection timeout
         const connectionTimeout = setTimeout(() => {
             if (newWs.readyState !== WebSocket.OPEN) {
                 console.warn('WebSocket connection timeout');
-                setLoaded(true); // Show UI even if connection fails
-                // Fall back to REST API
+                setLoaded(true); 
                 fetchPricesViaREST(initialCryptoList);
             }
         }, 5000);
@@ -77,10 +69,8 @@ const Dashboard = () => {
             clearTimeout(connectionTimeout);
             setLoaded(true);
             
-            // Create a list of symbols to subscribe to
             const symbols = initialCryptoList.map(crypto => `${crypto.symbol.toLowerCase()}usdt@kline_1m`);
 
-            // Subscribe to all symbols in a single message
                 newWs.send(JSON.stringify({
                     method: 'SUBSCRIBE',
                 params: symbols,
@@ -88,20 +78,17 @@ const Dashboard = () => {
                 }));
         };
         
-        // Throttle updates to prevent UI flickering
-        const updateThrottleMs = 2000; // Update UI at most once every 2 seconds
+        const updateThrottleMs = 2000; 
 
         newWs.onmessage = (event) => {
             try {
             const message = JSON.parse(event.data);
 
-                // Handle subscription response
                 if (message.result === undefined && message.k && message.k.c) {
                 const symbol = message.s.toLowerCase();
                 const price = parseFloat(message.k.c);
                     const now = Date.now();
                     
-                    // Only update if enough time has passed since last update for this symbol
                     if (!lastUpdateTimes.current[symbol] || now - lastUpdateTimes.current[symbol] > updateThrottleMs) {
                         lastUpdateTimes.current[symbol] = now;
 
@@ -132,24 +119,18 @@ const Dashboard = () => {
             }
         };
 
-        // Handle WebSocket errors gracefully
         newWs.onerror = (error) => {
             console.error('WebSocket error:', error);
-            // Fall back to REST API
             fetchPricesViaREST(initialCryptoList);
         };
         
-        // Handle WebSocket closure gracefully
         newWs.onclose = () => {
             console.log('WebSocket connection closed');
-            // Fall back to REST API
             fetchPricesViaREST(initialCryptoList);
         };
         
-        // Fallback function to fetch prices via REST API
         const fetchPricesViaREST = async (cryptoList: CryptoData[]) => {
             try {
-                // Fetch prices for each crypto in the list
                 const promises = cryptoList.map(async (crypto) => {
                     const symbol = `${crypto.symbol}USDT`;
                     try {
@@ -169,10 +150,8 @@ const Dashboard = () => {
                     return null;
                 });
                 
-                // Wait for all requests to complete
                 const results = await Promise.all(promises);
                 
-                // Update crypto data with the results
                 setCryptoData(prevCryptoData => {
                     const updatedCryptoData = new Map(prevCryptoData);
                     
@@ -194,7 +173,6 @@ const Dashboard = () => {
             }
         };
         
-        // Clean up function
         return () => {
             clearTimeout(connectionTimeout);
             if (newWs.readyState === WebSocket.OPEN || newWs.readyState === WebSocket.CONNECTING) {
@@ -242,7 +220,6 @@ const Dashboard = () => {
 
     const cryptoDataArray: CryptoData[] = Array.from(cryptoData.values());
 
-    // Calculate profit/loss percentage
     const calculateProfitLossPercentage = () => {
         const investment = parseFloat(calculateTotalInvestment());
         const currentValue = parseFloat(calculateCurrentValue());
@@ -273,7 +250,6 @@ const Dashboard = () => {
                     </div>
                 </div>
                 
-                {/* Investment Summary Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
                     <div className="card p-6">
                         <div className="flex items-center justify-between mb-4">
@@ -344,9 +320,7 @@ const Dashboard = () => {
                 </div>
                 
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-                    {/* Main Content Area */}
                     <div className="lg:col-span-2 space-y-8">
-                        {/* Holdings Section */}
                         <section>
                             <div className="flex justify-between items-center mb-4">
                                 <h2 className="text-xl font-semibold text-gray-800">Your Holdings</h2>
@@ -420,9 +394,7 @@ const Dashboard = () => {
                         </section>
                     </div>
                     
-                    {/* Sidebar */}
                     <div className="lg:col-span-1">
-                        {/* Quick Actions */}
                         <div className="card p-6 mb-8">
                             <h2 className="text-lg font-semibold text-gray-800 mb-4">Quick Actions</h2>
                             <div className="space-y-3">
@@ -452,7 +424,6 @@ const Dashboard = () => {
                             </div>
                         </div>
                         
-                        {/* Top Performers */}
                         <div className="card p-6">
                             <h2 className="text-lg font-semibold text-gray-800 mb-4">Top Performers</h2>
                             {loaded ? (

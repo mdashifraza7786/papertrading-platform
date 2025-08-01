@@ -1,6 +1,5 @@
 import NextAuth, { CredentialsSignin } from 'next-auth';
 import Credentials from 'next-auth/providers/credentials';
-// Import bcrypt only in server components
 import dbConnect from '@/util/dbConnect'; 
 import { getUserByEmail } from './models/Users';
 

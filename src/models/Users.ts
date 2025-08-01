@@ -1,6 +1,5 @@
 import mongoose, { Schema, Document, Model } from 'mongoose';
 
-// Define the interface for User document
 export interface UserDocument extends Document {
     name: string;
     email: string;
@@ -8,7 +7,6 @@ export interface UserDocument extends Document {
     balance: number;
 }
 
-// Define the schema for the User model
 const UserSchema: Schema<UserDocument> = new Schema({
     name: { type: String, required: true },
     email: { type: String, required: true, unique: true },
@@ -16,7 +14,6 @@ const UserSchema: Schema<UserDocument> = new Schema({
     balance: { type: Number, default: 100000 }
 });
 
-// Create the User model based on the schema
 export const UserModel: Model<UserDocument> = mongoose.models.User || mongoose.model<UserDocument>('User', UserSchema);
 
 

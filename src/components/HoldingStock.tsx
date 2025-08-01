@@ -66,7 +66,7 @@ const HoldingCard: React.FC<Props> = ({ holding, cryptoData }) => {
 
     const currentValue = currentPrice * totalQuantity;
     const profitLoss = currentValue - totalPrice;
-    const profitLossPercentage = (profitLoss/totalPrice)*100; // Changed from currentValue to totalPrice for correct calculation
+    const profitLossPercentage = (profitLoss/totalPrice)*100;
     const isProfitable = profitLossPercentage > 0;
 
     return (

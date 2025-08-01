@@ -20,9 +20,9 @@ const Header = ({ sess }: any) => {
     const [searchResults, setSearchResults] = useState<{ id: number; name: string; symbol: string; }[]>([]);
     const [inputFocused, setInputFocused] = useState<boolean>(false);
     const [walletData, setWalletData] = useState<number | string>("Loading");
-    const [menuOpen, setMenuOpen] = useState<boolean>(false); // State for menu visibility
+    const [menuOpen, setMenuOpen] = useState<boolean>(false);
     const pathname = usePathname();
-    // Refresh page if not logged in and not on login, register, or logout page
+    
     if (!sess?.user?.email) {
         if (pathname !== "/login" && pathname !== "/register" && pathname !== "/logout") {
             window.location.href = "/login"
@@ -220,7 +220,6 @@ const Header = ({ sess }: any) => {
                 </div>
             </header>
             
-            {/* Mobile Menu */}
             {menuOpen && (
                 <div className="md:hidden fixed inset-0 z-40">
                     <div className="fixed inset-0 bg-black/20 backdrop-blur-sm" onClick={toggleMenu}></div>
