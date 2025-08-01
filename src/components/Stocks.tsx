@@ -27,11 +27,12 @@ const Stocks = ({ data }: { data: CryptoData[] }) => {
                         </thead>
                         <tbody>
                             {data.map(crypto => (
+                                
                                 <tr key={crypto.id} className="border-b border-gray-50 hover:bg-gray-50">
                                     <td className="py-4 pr-2">
-                                        <Link href={"/market/"+crypto.name.replace("USDT","")} className="flex items-center">
+                                        <Link href={"/market/"+crypto.symbol.toUpperCase().replace("USDT","")} className="flex items-center">
                                             <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3 font-mono text-sm">
-                                                {crypto.name.replace("USDT","").substring(0, 2)}
+                                                {crypto.symbol.toUpperCase().replace("USDT","")}
                                             </div>
                                             <div>
                                                 <p className="font-medium text-gray-900">{getCryptoName(crypto.name.replace("USDT",""))}</p>
@@ -61,7 +62,7 @@ const Stocks = ({ data }: { data: CryptoData[] }) => {
                                         ) : '-'}
                                     </td>
                                     <td className="py-4 text-right">
-                                        <Link href={"/market/"+crypto.name.replace("USDT","")} className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 font-medium text-sm">
+                                        <Link href={"/market/"+crypto.symbol.toUpperCase().replace("USDT","")} className="inline-flex items-center justify-center px-3 py-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 font-medium text-sm">
                                             Trade
                                         </Link>
                                     </td>

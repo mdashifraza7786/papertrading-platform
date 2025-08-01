@@ -5,15 +5,9 @@ import { useRouter } from "next/navigation";
 import NextTopLoader from "nextjs-toploader";
 import { usePathname } from "next/navigation";
 import axios from "axios";
+import { cryptoSymbols } from "@/util/getCryptoName";
 
-const predefinedCryptoList = [
-    { "id": 1, "name": "Bitcoin", "symbol": "BTC" },
-    { "id": 2, "name": "Ethereum", "symbol": "ETH" },
-    { "id": 3, "name": "Ripple", "symbol": "XRP" },
-    { "id": 4, "name": "Litecoin", "symbol": "LTC" },
-    { "id": 5, "name": "Cardano", "symbol": "ADA" },
-];
-
+const predefinedCryptoList = cryptoSymbols;
 const Header = ({ sess }: any) => {
     const [loggedin, setLoggedin] = useState<boolean>(false);
     const [searchTerm, setSearchTerm] = useState<string>('');
@@ -28,7 +22,9 @@ const Header = ({ sess }: any) => {
             window.location.href = "/login"
         }
     }
-
+    useEffect(()=>{
+        setSearchTerm('');
+    },[pathname]);
     useEffect(() => {
         if (sess?.user) {
             setLoggedin(true);
@@ -122,13 +118,14 @@ const Header = ({ sess }: any) => {
                                     id="search"
                                     className="input-field pl-10 pr-4 py-2 w-64 h-10"
                                     placeholder="Search cryptocurrencies..."
+                                    autoComplete="off"
                                     onChange={handleSearchChange}
                                     onFocus={handleInputFocus}
                                     onBlur={handleInputBlur}
                                     value={searchTerm}
                                 />
                                 {inputFocused && searchTerm.trim() === '' && (
-                                    <div className="absolute mt-2 w-full bg-white rounded-lg card-shadow z-50">
+                                    <div className="absolute mt-2 max-h-64 overflow-y-auto w-full bg-white rounded-lg shadow-lg shadow-gray-200/60 border border-gray-100 z-50">
                                         {predefinedCryptoList.map(crypto => (
                                             <Link key={crypto.id} href={`/market/${crypto.symbol}`}>
                                                 <div className="py-3 px-4 hover:bg-gray-50 cursor-pointer flex justify-between items-center border-b border-gray-50 last:border-0">
@@ -140,7 +137,7 @@ const Header = ({ sess }: any) => {
                                     </div>
                                 )}
                                 {searchTerm.trim() !== '' && (
-                                    <div className="absolute mt-2 w-full bg-white rounded-lg card-shadow z-50">
+                                    <div className="absolute mt-2 w-full max-h-64 overflow-y-auto bg-white rounded-lg shadow-lg shadow-gray-200/60 border border-gray-100 z-50">
                                         {searchResults.length > 0 ? (
                                             searchResults.map(result => (
                                                 <Link key={result.id} href={`/market/${result.symbol}`}>

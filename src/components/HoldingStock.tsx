@@ -1,6 +1,7 @@
 import { CryptoData } from "@/app/dashboard/page";
 import Loader from "@/app/loding";
 import { getCryptoName } from "@/util/getCryptoName";
+import Link from "next/link";
 import { Suspense } from "react";
 
 const HoldingStock = ({ holdingsData, cryptoData }: { holdingsData: any[], cryptoData: CryptoData[] }) => {
@@ -11,7 +12,9 @@ const HoldingStock = ({ holdingsData, cryptoData }: { holdingsData: any[], crypt
                     {holdingsData.length > 0 ? (
                         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                             {holdingsData.map((holding, index) => (
-                                <HoldingCard key={index} holding={holding} cryptoData={cryptoData} />
+                                <Link href={`/market/${holding.symbol}`} key={index}>
+                                    <HoldingCard key={index} holding={holding} cryptoData={cryptoData} />
+                                </Link>
                             ))}
                         </div>
                     ) : (
@@ -35,7 +38,7 @@ interface Props {
 }
 
 const HoldingCard: React.FC<Props> = ({ holding, cryptoData }) => {
-    const symbol = holding.symbol.toLowerCase()+"usdt";
+    const symbol = holding.symbol.toLowerCase() + "usdt";
     const totalPrice = parseFloat(holding.totalPrice["$numberDecimal"]);
     const totalQuantity = parseFloat(holding.totalQuantity["$numberDecimal"]);
 
@@ -66,16 +69,14 @@ const HoldingCard: React.FC<Props> = ({ holding, cryptoData }) => {
 
     const currentValue = currentPrice * totalQuantity;
     const profitLoss = currentValue - totalPrice;
-    const profitLossPercentage = (profitLoss/totalPrice)*100;
+    const profitLossPercentage = (profitLoss / totalPrice) * 100;
     const isProfitable = profitLossPercentage > 0;
 
     return (
         <div className="card p-4 hover-lift">
             <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center">
-                    <div className="w-8 h-8 bg-gray-100 rounded-full flex items-center justify-center mr-3">
-                        <span className="font-medium text-gray-600">{holding.symbol.substring(0, 2)}</span>
-                    </div>
+                   
                     <div>
                         <h3 className="font-medium text-gray-900">{getCryptoName(holding.symbol)}</h3>
                         <p className="text-xs text-gray-500">{totalQuantity.toFixed(4)} {holding.symbol}</p>
@@ -85,7 +86,7 @@ const HoldingCard: React.FC<Props> = ({ holding, cryptoData }) => {
                     {holding.symbol}
                 </div>
             </div>
-            
+
             <div className="flex justify-between items-end">
                 <div>
                     <p className="text-xs text-gray-500 mb-1">Current Value</p>
@@ -106,14 +107,14 @@ const HoldingCard: React.FC<Props> = ({ holding, cryptoData }) => {
                     </span>
                 </div>
             </div>
-            
+
             <div className="mt-3 pt-3 border-t border-gray-100 flex justify-between items-center">
                 <div className="text-xs text-gray-500">
-                    <span>Buy price: </span>
+                    <span className="block">Buy price: </span>
                     <span className="font-medium text-gray-700">${(totalPrice / totalQuantity).toFixed(2)}</span>
                 </div>
                 <div className="text-xs text-gray-500">
-                    <span>Current: </span>
+                    <span className="block">Current: </span>
                     <span className="font-medium text-gray-700">${currentPrice.toFixed(2)}</span>
                 </div>
             </div>
