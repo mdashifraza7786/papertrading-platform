@@ -41,44 +41,46 @@ const HoldingsList: React.FC<HoldingsListProps> = ({ holdingsData, cryptoData, l
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold text-gray-800">Current Holdings</h2>
         <div className="text-sm text-gray-500">
-          {filteredHoldings.length} {filteredHoldings.length === 1 ? 'asset' : 'assets'}
+          {loaded ? `${filteredHoldings.length} ${filteredHoldings.length === 1 ? 'asset' : 'assets'}` : 'Loading...'}
         </div>
       </div>
-
-      {loaded ? (
-        filteredHoldings.length > 0 ? (
-          <div className="space-y-4">
-            {filteredHoldings.map((holding, index) => (
-              <div key={index} className="relative">
-                <HoldingCard
-                  holding={holding}
-                  cryptoData={cryptoData}
-                  onSellSuccess={refreshHoldings}
-                />
-              </div>
-            ))}
-          </div>
-        ) : (
-          <div className="bg-white rounded-xl p-8 text-center border border-gray-100">
-            <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
-              <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
-              </svg>
-            </div>
-            <h3 className="text-lg font-medium text-gray-900 mb-1">No holdings yet</h3>
-            <p className="text-gray-500 mb-4">Start investing to build your portfolio</p>
-            <Link href="/market/BTC" className="button-primary inline-flex items-center">
-              <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
-              </svg>
-              Start Trading
-            </Link>
-          </div>
-        )
-      ) : (
+      
+      {!loaded ? (
+        // Loading state
         <div className="animate-pulse space-y-4">
           <div className="h-20 bg-gray-200 rounded"></div>
           <div className="h-20 bg-gray-200 rounded"></div>
+          <div className="h-20 bg-gray-200 rounded"></div>
+        </div>
+      ) : filteredHoldings.length > 0 ? (
+        // Holdings exist
+        <div className="space-y-4">
+          {filteredHoldings.map((holding, index) => (
+            <div key={index} className="relative">
+              <HoldingCard
+                holding={holding}
+                cryptoData={cryptoData}
+                onSellSuccess={refreshHoldings}
+              />
+            </div>
+          ))}
+        </div>
+      ) : (
+        // No holdings
+        <div className="bg-white rounded-xl p-8 text-center border border-gray-100">
+          <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
+            <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-1">No holdings yet</h3>
+          <p className="text-gray-500 mb-4">Start investing to build your portfolio</p>
+          <Link href="/market/BTC" className="button-primary inline-flex items-center">
+            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            Start Trading
+          </Link>
         </div>
       )}
       <ToastContainer position="bottom-right" />
