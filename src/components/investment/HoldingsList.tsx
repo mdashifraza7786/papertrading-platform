@@ -162,7 +162,7 @@ const HoldingCard: React.FC<HoldingCardProps> = ({ holding, cryptoData, onSellSu
   const isProfitable = profitLoss > 0;
 
   return (
-    <Link href={`/market/${holding.symbol.toLowerCase()}`}>
+    <Link href={`/market/${holding.symbol.toUpperCase()}`}>
       <div className="bg-white p-4 rounded-lg border border-gray-200 hover:shadow-md transition-shadow relative">
         <div className="flex justify-between items-center mb-2">
           <div className="flex items-center">
