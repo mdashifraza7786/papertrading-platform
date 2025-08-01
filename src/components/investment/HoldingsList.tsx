@@ -46,27 +46,12 @@ const HoldingsList: React.FC<HoldingsListProps> = ({ holdingsData, cryptoData, l
       </div>
       
       {!loaded ? (
-        // Loading state
         <div className="animate-pulse space-y-4">
           <div className="h-20 bg-gray-200 rounded"></div>
           <div className="h-20 bg-gray-200 rounded"></div>
           <div className="h-20 bg-gray-200 rounded"></div>
         </div>
-      ) : filteredHoldings.length > 0 ? (
-        // Holdings exist
-        <div className="space-y-4">
-          {filteredHoldings.map((holding, index) => (
-            <div key={index} className="relative">
-              <HoldingCard
-                holding={holding}
-                cryptoData={cryptoData}
-                onSellSuccess={refreshHoldings}
-              />
-            </div>
-          ))}
-        </div>
-      ) : (
-        // No holdings
+      ) : filteredHoldings.length === 0 ? (
         <div className="bg-white rounded-xl p-8 text-center border border-gray-100">
           <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gray-100 mb-4">
             <svg className="w-8 h-8 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
@@ -81,6 +66,18 @@ const HoldingsList: React.FC<HoldingsListProps> = ({ holdingsData, cryptoData, l
             </svg>
             Start Trading
           </Link>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {filteredHoldings.map((holding, index) => (
+            <div key={index} className="relative">
+              <HoldingCard
+                holding={holding}
+                cryptoData={cryptoData}
+                onSellSuccess={refreshHoldings}
+              />
+            </div>
+          ))}
         </div>
       )}
       <ToastContainer position="bottom-right" />
