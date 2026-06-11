@@ -119,181 +119,184 @@ const ProChart: React.FC<ProChartProps> = ({
 
         // Initialize KLineChart with Groww Light Theme colors
         const chart = init(chartContainer, {
-            grid: {
-                show: true,
-                horizontal: { show: true, size: 1, color: '#E8F0EA', style: 'solid' },
-                vertical: { show: true, size: 1, color: '#E8F0EA', style: 'solid' },
-            },
-            candle: {
-                type: 'candle_solid',
-                bar: {
-                    upColor: '#00B050',
-                    downColor: '#EF4444',
-                    noChangeColor: '#888888',
-                    upBorderColor: '#00B050',
-                    downBorderColor: '#EF4444',
-                    noChangeBorderColor: '#888888',
-                    upWickColor: '#00B050',
-                    downWickColor: '#EF4444',
-                    noChangeWickColor: '#888888',
-                },
-                priceMark: {
+            styles: {
+                grid: {
                     show: true,
-                    high: {
-                        show: true,
-                        color: '#00B050',
-                        textMargin: 5,
-                        textSize: 10,
-                        textFamily: 'Inter',
-                        textWeight: 'normal',
-                    },
-                    low: {
-                        show: true,
-                        color: '#EF4444',
-                        textMargin: 5,
-                        textSize: 10,
-                        textFamily: 'Inter',
-                        textWeight: 'normal',
-                    },
-                    last: {
-                        show: true,
+                    horizontal: { show: true, size: 1, color: '#E8F0EA', style: 'solid' },
+                    vertical: { show: true, size: 1, color: '#E8F0EA', style: 'solid' },
+                },
+                candle: {
+                    type: 'candle_solid',
+                    bar: {
                         upColor: '#00B050',
                         downColor: '#EF4444',
                         noChangeColor: '#888888',
-                        line: { show: true, style: 'dashed', dashValue: [4, 4], size: 1 },
+                        upBorderColor: '#00B050',
+                        downBorderColor: '#EF4444',
+                        noChangeBorderColor: '#888888',
+                        upWickColor: '#00B050',
+                        downWickColor: '#EF4444',
+                        noChangeWickColor: '#888888',
+                    },
+                    priceMark: {
+                        show: true,
+                        high: {
+                            show: true,
+                            color: '#00B050',
+                            textMargin: 5,
+                            textSize: 10,
+                            textFamily: 'Inter',
+                            textWeight: 'normal',
+                        },
+                        low: {
+                            show: true,
+                            color: '#EF4444',
+                            textMargin: 5,
+                            textSize: 10,
+                            textFamily: 'Inter',
+                            textWeight: 'normal',
+                        },
+                        last: {
+                            show: true,
+                            upColor: '#00B050',
+                            downColor: '#EF4444',
+                            noChangeColor: '#888888',
+                            line: { show: true, style: 'dashed', dashValue: [4, 4], size: 1 },
+                            text: {
+                                show: true,
+                                size: 12,
+                                paddingLeft: 4,
+                                paddingTop: 4,
+                                paddingRight: 4,
+                                paddingBottom: 4,
+                                color: '#FFFFFF',
+                                family: 'Inter',
+                                weight: 'bold',
+                                borderRadius: 4,
+                            },
+                        },
+                    },
+                    tooltip: {
+                        showRule: 'always',
+                        showType: 'standard',
+                        custom: (data: any) => {
+                            return [
+                                { title: 'O', value: data.current.open?.toFixed(2) },
+                                { title: 'H', value: data.current.high?.toFixed(2) },
+                                { title: 'L', value: data.current.low?.toFixed(2) },
+                                { title: 'C', value: data.current.close?.toFixed(2) },
+                                { title: 'V', value: data.current.volume?.toFixed(2) }
+                            ];
+                        },
+                        text: { size: 12, family: 'Inter', color: '#485A4A', marginLeft: 8, marginTop: 6, marginRight: 8, marginBottom: 0 },
+                    },
+                },
+                indicator: {
+                    ohlc: {
+                        upColor: 'rgba(0, 176, 80, 0.2)',
+                        downColor: 'rgba(239, 68, 68, 0.2)',
+                        noChangeColor: '#888888'
+                    },
+                    bars: [{
+                        style: 'fill',
+                        borderStyle: 'solid',
+                        borderSize: 1,
+                        borderDashedValue: [2, 2],
+                        upColor: 'rgba(0, 176, 80, 0.35)',
+                        downColor: 'rgba(239, 68, 68, 0.35)',
+                        noChangeColor: '#888888'
+                    }],
+                    lines: [
+                        { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#F59E0B' },
+                        { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#6366F1' },
+                        { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#EC4899' },
+                        { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#14B8A6' },
+                        { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#F97316' }
+                    ],
+                },
+                xAxis: {
+                    show: true,
+                    size: 'auto',
+                    axisLine: { show: true, color: '#DCE6DE', size: 1 },
+                    tickText: { show: true, color: '#72905A', family: 'Inter', weight: 'normal', size: 11, paddingBottom: 6, paddingTop: 6 },
+                    tickLine: { show: true, size: 1, length: 3, color: '#DCE6DE' },
+                },
+                yAxis: {
+                    show: true,
+                    size: 'auto',
+                    position: 'right',
+                    type: 'normal',
+                    inside: false,
+                    reverse: false,
+                    axisLine: { show: true, color: '#DCE6DE', size: 1 },
+                    tickText: { show: true, color: '#72905A', family: 'Inter', weight: 'normal', size: 11, paddingLeft: 6, paddingRight: 6 },
+                    tickLine: { show: true, size: 1, length: 3, color: '#DCE6DE' },
+                },
+                crosshair: {
+                    show: true,
+                    horizontal: {
+                        show: true,
+                        line: { show: true, style: 'dashed', dashValue: [4, 2], size: 1, color: '#00B050' },
                         text: {
                             show: true,
-                            size: 12,
-                            paddingLeft: 4,
-                            paddingTop: 4,
-                            paddingRight: 4,
-                            paddingBottom: 4,
                             color: '#FFFFFF',
+                            size: 12,
                             family: 'Inter',
                             weight: 'bold',
-                            borderRadius: 4,
+                            paddingLeft: 4,
+                            paddingRight: 4,
+                            paddingTop: 4,
+                            paddingBottom: 4,
+                            backgroundColor: '#00B050',
+                        },
+                    },
+                    vertical: {
+                        show: true,
+                        line: { show: true, style: 'dashed', dashValue: [4, 2], size: 1, color: '#00B050' },
+                        text: {
+                            show: true,
+                            color: '#FFFFFF',
+                            size: 12,
+                            family: 'Inter',
+                            weight: 'bold',
+                            paddingLeft: 4,
+                            paddingRight: 4,
+                            paddingTop: 4,
+                            paddingBottom: 4,
+                            backgroundColor: '#00B050',
                         },
                     },
                 },
-                tooltip: {
-                    showRule: 'always',
-                    showType: 'standard',
-                    custom: (data) => {
-                        return [
-                            { title: 'O', value: data.current.open?.toFixed(2) },
-                            { title: 'H', value: data.current.high?.toFixed(2) },
-                            { title: 'L', value: data.current.low?.toFixed(2) },
-                            { title: 'C', value: data.current.close?.toFixed(2) },
-                            { title: 'V', value: data.current.volume?.toFixed(2) }
-                        ];
+                overlay: {
+                    point: {
+                        color: '#00B050',
+                        borderColor: 'rgba(0, 176, 80, 0.15)',
+                        borderSize: 1,
+                        radius: 4,
+                        activeColor: '#00B050',
+                        activeBorderColor: 'rgba(0, 176, 80, 0.3)',
+                        activeBorderSize: 2,
+                        activeRadius: 6,
                     },
-                    text: { size: 12, family: 'Inter', color: '#485A4A', marginLeft: 8, marginTop: 6, marginRight: 8, marginBottom: 0 },
-                },
-            },
-            indicator: {
-                ohlc: {
-                    upColor: 'rgba(0, 176, 80, 0.2)',
-                    downColor: 'rgba(239, 68, 68, 0.2)',
-                    noChangeColor: '#888888'
-                },
-                bars: [{
-                    style: 'fill',
-                    borderStyle: 'solid',
-                    borderSize: 1,
-                    borderDashedValue: [2, 2],
-                    upColor: 'rgba(0, 176, 80, 0.35)',
-                    downColor: 'rgba(239, 68, 68, 0.35)',
-                    noChangeColor: '#888888'
-                }],
-                lines: [
-                    { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#F59E0B' },
-                    { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#6366F1' },
-                    { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#EC4899' },
-                    { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#14B8A6' },
-                    { style: 'solid', smooth: false, size: 1, dashedValue: [2, 2], color: '#F97316' }
-                ],
-            },
-            xAxis: {
-                show: true,
-                size: 'auto',
-                axisLine: { show: true, color: '#DCE6DE', size: 1 },
-                tickText: { show: true, color: '#72905A', family: 'Inter', weight: 'normal', size: 11, paddingBottom: 6, paddingTop: 6 },
-                tickLine: { show: true, size: 1, length: 3, color: '#DCE6DE' },
-            },
-            yAxis: {
-                show: true,
-                size: 'auto',
-                position: 'right',
-                type: 'normal',
-                inside: false,
-                reverse: false,
-                axisLine: { show: true, color: '#DCE6DE', size: 1 },
-                tickText: { show: true, color: '#72905A', family: 'Inter', weight: 'normal', size: 11, paddingLeft: 6, paddingRight: 6 },
-                tickLine: { show: true, size: 1, length: 3, color: '#DCE6DE' },
-            },
-            crosshair: {
-                show: true,
-                horizontal: {
-                    show: true,
-                    line: { show: true, style: 'dashed', dashValue: [4, 2], size: 1, color: '#00B050' },
-                    text: {
-                        show: true,
-                        color: '#FFFFFF',
-                        size: 12,
-                        family: 'Inter',
-                        weight: 'bold',
-                        paddingLeft: 4,
-                        paddingRight: 4,
-                        paddingTop: 4,
-                        paddingBottom: 4,
-                        backgroundColor: '#00B050',
+                    line: {
+                        style: 'solid',
+                        smooth: false,
+                        color: '#6366F1',
+                        size: 2,
+                        dashedValue: [2, 2],
                     },
-                },
-                vertical: {
-                    show: true,
-                    line: { show: true, style: 'dashed', dashValue: [4, 2], size: 1, color: '#00B050' },
-                    text: {
-                        show: true,
-                        color: '#FFFFFF',
-                        size: 12,
-                        family: 'Inter',
-                        weight: 'bold',
-                        paddingLeft: 4,
-                        paddingRight: 4,
-                        paddingTop: 4,
-                        paddingBottom: 4,
-                        backgroundColor: '#00B050',
+                    polygon: {
+                        style: 'stroke',
+                        color: '#6366F1',
+                        size: 2,
+                        dashedValue: [2, 2],
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)',
                     },
-                },
-            },
-            overlay: {
-                point: {
-                    color: '#00B050',
-                    borderColor: 'rgba(0, 176, 80, 0.15)',
-                    borderSize: 1,
-                    radius: 4,
-                    activeColor: '#00B050',
-                    activeBorderColor: 'rgba(0, 176, 80, 0.3)',
-                    activeBorderSize: 2,
-                    activeRadius: 6,
-                },
-                line: {
-                    style: 'solid',
-                    smooth: false,
-                    color: '#6366F1',
-                    size: 2,
-                    dashedValue: [2, 2],
-                },
-                polygon: {
-                    style: 'stroke',
-                    color: '#6366F1',
-                    size: 2,
-                    dashedValue: [2, 2],
-                    backgroundColor: 'rgba(99, 102, 241, 0.1)',
-                },
-            }
+                }
+            } as any
         });
 
+        if (!chart) return;
         chartRef.current = chart;
 
         // Load data
@@ -354,12 +357,9 @@ const ProChart: React.FC<ProChartProps> = ({
     };
 
     const toggleChartType = (type: "candle_solid" | "candle_stroke" | "ohlc" | "area") => {
+        if (!chartRef.current) return;
+        chartRef.current.setStyles({ candle: { type: type as any } });
         setChartType(type);
-        if (chartRef.current) {
-            chartRef.current.setStyles({
-                candle: { type: type }
-            });
-        }
         setShowChartTypeMenu(false);
     };
 

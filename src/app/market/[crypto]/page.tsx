@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useParams, useRouter } from "next/navigation";
-import { Time } from "lightweight-charts";
+
 import axios from "axios";
 import { getCryptoName } from "@/util/getCryptoName";
 import { toast, ToastContainer } from "react-toastify";
@@ -92,7 +92,7 @@ const MarketPage = () => {
 
             if (Array.isArray(data) && data.length > 0) {
                 const formatted: OHLCData[] = data.map((d: number[]) => ({
-                    time: Math.floor(d[0] / 1000) as Time,
+                    time: Math.floor(d[0] / 1000) as number,
                     open: Number(d[1]),
                     high: Number(d[2]),
                     low: Number(d[3]),
@@ -132,7 +132,7 @@ const MarketPage = () => {
                 const msg = JSON.parse(event.data);
                 if (msg.k) {
                     const newCandle: OHLCData = {
-                        time: Math.floor(msg.k.t / 1000) as Time,
+                        time: Math.floor(msg.k.t / 1000) as number,
                         open: parseFloat(msg.k.o),
                         high: parseFloat(msg.k.h),
                         low: parseFloat(msg.k.l),

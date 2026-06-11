@@ -1,5 +1,5 @@
 "use client"
-import { CryptoData } from "@/app/dashboard/page";
+import { CryptoData } from "@/app/dashboard/DashboardClient";
 import { getCryptoName } from "@/util/getCryptoName";
 import { useState, useEffect } from 'react';
 

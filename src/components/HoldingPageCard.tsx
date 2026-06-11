@@ -1,4 +1,4 @@
-import { CryptoData } from "@/app/dashboard/page";
+import { CryptoData } from "@/app/dashboard/DashboardClient";
 import Loader from "@/app/loding";
 import { getCryptoName } from "@/util/getCryptoName";
 import Link from "next/link";

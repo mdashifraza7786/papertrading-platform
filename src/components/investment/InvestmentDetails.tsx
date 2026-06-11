@@ -73,7 +73,7 @@ const InvestmentDetails: React.FC<InvestmentDetailsProps> = ({ investment, uniqu
     };
 
     const chart = createChart(chartContainerRef.current!, chartProperties);
-    const candleSeries = chart.addCandlestickSeries({
+    const candleSeries = (chart as any).addCandlestickSeries({
       upColor: '#26a69a',
       downColor: '#ef5350',
       borderVisible: false,
