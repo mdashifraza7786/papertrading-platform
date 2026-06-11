@@ -133,7 +133,7 @@ const InvestmentDetails: React.FC<InvestmentDetailsProps> = ({ investment, uniqu
 
     fetchChartData();
 
-    const wsURL = `wss://fstream.binance.com/ws/${selectedSymbol}@kline_1m`;
+    const wsURL = `wss://fstream.binance.com/market/ws/${selectedSymbol}@kline_1m`;
     const ws = new WebSocket(wsURL);
 
     ws.onopen = () => {

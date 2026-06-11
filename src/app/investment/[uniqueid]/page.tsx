@@ -95,7 +95,7 @@ const InvestmentDetailPage = () => {
         if (!investment || chartData.length === 0) return;
 
         const symbol = `${investment.symbol}USDT`;
-        const ws = new WebSocket("wss://fstream.binance.com/ws");
+        const ws = new WebSocket("wss://fstream.binance.com/market/ws");
 
         ws.onopen = () => {
             const subscribeMsg = {
@@ -231,7 +231,7 @@ const InvestmentDetailPage = () => {
                             onTimeframeChange={handleTimeframeChange}
                         />
                     ) : (
-                        <div className="bg-[#0D1117] rounded-xl border border-[#1F2937] h-[500px] flex items-center justify-center">
+                        <div className="bg-background-tertiary rounded-xl border border-border h-[500px] flex items-center justify-center">
                             <div className="flex flex-col items-center gap-3">
                                 <div className="w-8 h-8 border-2 border-accent-primary/30 border-t-accent-primary rounded-full animate-spin" />
                                 <span className="text-text-muted text-sm">Loading chart...</span>
@@ -245,23 +245,23 @@ const InvestmentDetailPage = () => {
                         <h2 className="section-title">Position Summary</h2>
 
                         <div className="space-y-3">
-                            <div className="flex items-center justify-between py-3 border-b border-[#1F2937]">
+                            <div className="flex items-center justify-between py-3 border-b border-border">
                                 <span className="text-text-muted text-sm">Quantity</span>
                                 <span className="price-sm text-text-primary">{quantity.toFixed(4)} {investment.symbol}</span>
                             </div>
-                            <div className="flex items-center justify-between py-3 border-b border-[#1F2937]">
+                            <div className="flex items-center justify-between py-3 border-b border-border">
                                 <span className="text-text-muted text-sm">Buy Price</span>
                                 <span className="price-sm text-text-primary">${buyPrice.toFixed(2)}</span>
                             </div>
-                            <div className="flex items-center justify-between py-3 border-b border-[#1F2937]">
+                            <div className="flex items-center justify-between py-3 border-b border-border">
                                 <span className="text-text-muted text-sm">Current Price</span>
                                 <span className="price-sm text-text-primary">${price.toFixed(2)}</span>
                             </div>
-                            <div className="flex items-center justify-between py-3 border-b border-[#1F2937]">
+                            <div className="flex items-center justify-between py-3 border-b border-border">
                                 <span className="text-text-muted text-sm">Investment</span>
                                 <span className="price-sm text-text-primary">${investmentValue.toFixed(2)}</span>
                             </div>
-                            <div className="flex items-center justify-between py-3 border-b border-[#1F2937]">
+                            <div className="flex items-center justify-between py-3 border-b border-border">
                                 <span className="text-text-muted text-sm">Current Value</span>
                                 <span className="price-sm text-text-primary">${currentValue.toFixed(2)}</span>
                             </div>

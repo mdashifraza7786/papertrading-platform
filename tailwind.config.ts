@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 
 const config: Config = {
+  darkMode: false,
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
@@ -9,36 +10,36 @@ const config: Config = {
   theme: {
     extend: {
       colors: {
-        dark: {
-          primary: "#0D0F14",
-          secondary: "#151920",
-          tertiary: "#1C2127",
-          elevated: "#252B35",
+        background: {
+          primary: "rgb(var(--bg-primary) / <alpha-value>)",
+          secondary: "rgb(var(--bg-secondary) / <alpha-value>)",
+          tertiary: "rgb(var(--bg-tertiary) / <alpha-value>)",
+          elevated: "rgb(var(--bg-elevated) / <alpha-value>)",
         },
         accent: {
-          primary: "#6366F1",
-          glow: "#818CF8",
+          primary: "rgb(var(--accent-primary) / <alpha-value>)",
+          glow: "rgb(var(--accent-glow) / <alpha-value>)",
         },
         profit: {
-          DEFAULT: "#10B981",
-          soft: "#065F46",
+          DEFAULT: "rgb(var(--profit) / <alpha-value>)",
+          soft: "rgb(var(--profit-soft) / <alpha-value>)",
         },
         loss: {
-          DEFAULT: "#EF4444",
-          soft: "#7F1D1D",
+          DEFAULT: "rgb(var(--loss) / <alpha-value>)",
+          soft: "rgb(var(--loss-soft) / <alpha-value>)",
         },
         warning: "#F59E0B",
-        info: "#3B82F6",
+        info: "rgb(var(--info) / <alpha-value>)",
         text: {
-          primary: "#F9FAFB",
-          secondary: "#9CA3AF",
-          muted: "#6B7280",
+          primary: "rgb(var(--text-primary) / <alpha-value>)",
+          secondary: "rgb(var(--text-secondary) / <alpha-value>)",
+          muted: "rgb(var(--text-muted) / <alpha-value>)",
           disabled: "#4B5563",
         },
         border: {
-          DEFAULT: "#1F2937",
-          hover: "#374151",
-          focus: "#6366F1",
+          DEFAULT: "rgb(var(--border) / <alpha-value>)",
+          hover: "rgb(var(--border-hover) / <alpha-value>)",
+          focus: "rgb(var(--accent-primary) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -65,9 +66,10 @@ const config: Config = {
         xl: "16px",
       },
       boxShadow: {
-        glow: "0 0 20px rgba(99, 102, 241, 0.3)",
-        "glow-profit": "0 0 20px rgba(16, 185, 129, 0.3)",
-        "glow-loss": "0 0 20px rgba(239, 68, 68, 0.3)",
+        glow: "0 0 20px rgba(0, 176, 80, 0.25)",
+        "glow-profit": "0 0 20px rgba(0, 176, 80, 0.25)",
+        "glow-loss": "0 0 20px rgba(220, 38, 38, 0.25)",
+        card: "0 1px 4px rgba(0, 100, 30, 0.06)",
       },
       animation: {
         "fade-in": "fadeIn 0.3s ease-out",

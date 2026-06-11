@@ -12,7 +12,7 @@ interface WebSocketPriceComponentProps {
 
 const LiveDatas: React.FC<WebSocketPriceComponentProps> = ({ symbols, onPriceUpdate }) => {
   useEffect(() => {
-    const wsURLs = symbols.map(symbol => `wss://fstream.binance.com/ws/${symbol.toLowerCase()}@ticker`);
+    const wsURLs = symbols.map(symbol => `wss://fstream.binance.com/market/ws/${symbol.toLowerCase()}@ticker`);
     const websockets = wsURLs.map(wsURL => {
       const ws = new WebSocket(wsURL);
       

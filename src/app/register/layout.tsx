@@ -4,7 +4,7 @@ export default function RegisterLayout({
   children: React.ReactNode;
 }) {
   return (
-    <div className="min-h-screen bg-dark-primary flex items-center justify-center p-4">
+    <div className="min-h-screen flex items-center justify-center p-4" style={{ background: "linear-gradient(135deg, rgb(var(--bg-primary)) 0%, rgb(var(--accent-light)) 100%)" }}>
       {children}
     </div>
   );

@@ -2,213 +2,262 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,400;0,14..32,500;0,14..32,600;0,14..32,700;0,14..32,800;1,14..32,400&display=swap');
 
 @layer base {
-  body {
-    @apply bg-dark-primary text-text-primary font-sans antialiased;
+  :root {
+    /* Groww Light Palette */
+    --bg-primary:     246 248 246;   /* #F6F8F6 — very light green-tinted white */
+    --bg-secondary:   255 255 255;   /* pure white cards */
+    --bg-tertiary:    240 247 242;   /* #F0F7F2 — light mint for hover/inputs */
+    --bg-elevated:    255 255 255;   /* white dropdowns */
+
+    --text-primary:   17 24 17;      /* near-black */
+    --text-secondary: 72 90 74;      /* dark slate-green */
+    --text-muted:     130 148 132;   /* muted green-grey */
+
+    --border:         220 234 222;   /* soft green border */
+    --border-hover:   175 210 180;   /* hover border */
+
+    /* Groww green accent */
+    --accent-primary: 0 176 80;      /* #00B050 — Groww green */
+    --accent-glow:    0 147 66;      /* #009342 — darker on hover */
+    --accent-light:   232 248 238;   /* #E8F8EE — pale green tint */
+
+    /* P&L */
+    --profit:         0 176 80;      /* same as accent */
+    --profit-soft:    232 248 238;
+    --loss:           220 38 38;     /* red */
+    --loss-soft:      254 226 226;
+
+    --info: 59 130 246;
+    --warning-color: 245 158 11;
   }
-  
+
+  html {
+    color-scheme: light;
+  }
+
+  body {
+    background-color: rgb(var(--bg-primary));
+    color: rgb(var(--text-primary));
+    font-family: 'Inter', system-ui, sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
   h1, h2, h3, h4, h5, h6 {
-    @apply tracking-tight text-text-primary;
+    @apply tracking-tight;
+    color: rgb(var(--text-primary));
   }
 }
 
 @layer components {
+
+  /* ── Cards ───────────────────────────────────── */
   .card {
-    @apply bg-dark-secondary rounded-lg p-5;
-    border: 1px solid #1F2937;
+    @apply bg-white rounded-2xl p-6;
+    border: 1px solid rgb(var(--border));
+    box-shadow: 0 1px 4px rgba(0, 100, 30, 0.06);
   }
-  
+
   .card-interactive {
-    @apply card transition-all duration-200 hover:bg-dark-tertiary hover:-translate-y-0.5;
+    @apply card transition-all duration-200 hover:-translate-y-0.5 cursor-pointer;
   }
-  
   .card-interactive:hover {
-    border-color: #374151;
+    border-color: rgb(var(--accent-primary) / 0.3);
+    box-shadow: 0 4px 16px rgba(0, 176, 80, 0.10);
   }
-  
-  .stat-card {
-    @apply card relative overflow-hidden;
-  }
-  
-  .stat-card::before {
-    content: '';
-    @apply absolute inset-0 bg-gradient-to-br from-white/[0.02] to-transparent pointer-events-none;
-  }
-  
+
+  /* ── Buttons ─────────────────────────────────── */
   .btn {
-    @apply inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-dark-primary disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center justify-center font-semibold rounded-xl transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed;
   }
-  
+
   .btn-primary {
-    @apply btn bg-accent-primary text-white hover:bg-accent-glow focus:ring-accent-primary h-10 px-4;
+    @apply btn text-white h-11 px-5 text-sm;
+    background-color: rgb(var(--accent-primary));
+    focus-ring-color: rgb(var(--accent-primary));
   }
-  
+  .btn-primary:hover {
+    background-color: rgb(var(--accent-glow));
+    box-shadow: 0 4px 14px rgba(0, 176, 80, 0.30);
+  }
+  .btn-primary:focus {
+    --tw-ring-color: rgb(var(--accent-primary) / 0.4);
+  }
+
   .btn-success {
-    @apply btn bg-profit text-white hover:brightness-110 focus:ring-profit h-10 px-4;
+    @apply btn bg-profit text-white hover:brightness-110 h-11 px-5 text-sm;
   }
-  
+
   .btn-danger {
-    @apply btn bg-loss text-white hover:brightness-110 focus:ring-loss h-10 px-4;
+    @apply btn text-white h-11 px-5 text-sm;
+    background-color: rgb(var(--loss));
   }
-  
+  .btn-danger:hover {
+    background-color: rgb(185 28 28);
+    box-shadow: 0 4px 14px rgba(220, 38, 38, 0.25);
+  }
+
   .btn-ghost {
-    @apply btn bg-transparent text-text-secondary hover:bg-dark-tertiary hover:text-text-primary h-10 px-4;
-    border: 1px solid #1F2937;
+    @apply btn h-10 px-4 text-sm;
+    color: rgb(var(--text-secondary));
+    background: transparent;
+    border: 1px solid rgb(var(--border));
   }
-  
-  .btn-ghost:focus {
-    @apply ring-gray-500/30;
+  .btn-ghost:hover {
+    background-color: rgb(var(--bg-tertiary));
+    color: rgb(var(--text-primary));
+    border-color: rgb(var(--border-hover));
   }
-  
+
   .btn-icon {
-    @apply btn bg-transparent hover:bg-dark-tertiary text-text-secondary hover:text-text-primary h-10 w-10 p-0;
+    @apply btn h-9 w-9 p-0 rounded-xl;
+    color: rgb(var(--text-secondary));
+    background: transparent;
   }
-  
+  .btn-icon:hover {
+    background-color: rgb(var(--bg-tertiary));
+    color: rgb(var(--text-primary));
+  }
+
+  /* ── Inputs ──────────────────────────────────── */
   .input {
-    @apply w-full bg-dark-tertiary rounded-lg px-4 py-3 text-text-primary placeholder:text-text-muted focus:outline-none focus:ring-1 focus:ring-accent-primary transition-all duration-200;
-    border: 1px solid #1F2937;
+    @apply w-full rounded-xl px-4 py-3 text-sm transition-all duration-200 outline-none;
+    background-color: rgb(var(--bg-tertiary));
+    border: 1.5px solid rgb(var(--border));
+    color: rgb(var(--text-primary));
   }
-  
+  .input::placeholder {
+    color: rgb(var(--text-muted));
+  }
   .input:focus {
-    border-color: #6366F1;
+    border-color: rgb(var(--accent-primary));
+    background-color: #fff;
+    box-shadow: 0 0 0 3px rgba(0, 176, 80, 0.12);
   }
-  
+
   .input-with-icon {
     @apply input pl-10;
   }
-  
+
+  /* ── Sidebar ─────────────────────────────────── */
   .sidebar-link {
-    @apply flex items-center gap-3 px-4 py-3 rounded-lg text-text-secondary hover:text-text-primary hover:bg-dark-tertiary transition-all duration-200;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150;
+    color: rgb(var(--text-secondary));
   }
-  
+  .sidebar-link:hover {
+    background-color: rgb(var(--bg-tertiary));
+    color: rgb(var(--text-primary));
+  }
+
   .sidebar-link-active {
-    @apply flex items-center gap-3 px-4 py-3 rounded-lg bg-dark-tertiary text-text-primary transition-all duration-200;
-    border-left: 2px solid #6366F1;
+    @apply flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-semibold transition-all duration-150;
+    background-color: rgb(var(--accent-light));
+    color: rgb(var(--accent-primary));
   }
-  
+
+  /* ── Table ───────────────────────────────────── */
   .table-header {
-    @apply text-tiny uppercase tracking-wider text-text-muted font-medium bg-dark-tertiary;
+    @apply text-tiny uppercase tracking-wider font-semibold;
+    color: rgb(var(--text-muted));
+    background-color: rgb(var(--bg-tertiary));
   }
-  
+
   .table-row {
-    @apply hover:bg-dark-tertiary/50 transition-colors duration-150;
-    border-bottom: 1px solid #1F2937;
+    @apply transition-colors duration-100;
+    border-bottom: 1px solid rgb(var(--border));
   }
-  
-  .price {
-    @apply font-mono tabular-nums;
+  .table-row:hover {
+    background-color: rgb(var(--bg-tertiary));
   }
-  
-  .price-lg {
-    @apply price text-[32px] font-bold;
-  }
-  
-  .price-md {
-    @apply price text-xl font-semibold;
-  }
-  
-  .price-sm {
-    @apply price text-sm font-medium;
-  }
-  
-  .profit-text {
-    @apply text-profit;
-  }
-  
-  .loss-text {
-    @apply text-loss;
-  }
-  
+
+  /* ── Typography ──────────────────────────────── */
+  .price      { @apply font-mono tabular-nums; }
+  .price-lg   { @apply price text-3xl font-bold; }
+  .price-md   { @apply price text-xl font-semibold; }
+  .price-sm   { @apply price text-sm font-semibold; }
+
+  .profit-text { color: rgb(var(--profit)); }
+  .loss-text   { color: rgb(var(--loss)); }
+
   .profit-bg {
-    @apply bg-profit-soft/20 text-profit;
+    background-color: rgb(var(--profit-soft));
+    color: rgb(var(--profit));
   }
-  
   .loss-bg {
-    @apply bg-loss-soft/20 text-loss;
+    background-color: rgb(var(--loss-soft));
+    color: rgb(var(--loss));
   }
-  
-  .badge {
-    @apply inline-flex items-center gap-1 px-2 py-1 rounded text-tiny font-medium;
-  }
-  
-  .badge-profit {
-    @apply badge profit-bg;
-  }
-  
-  .badge-loss {
-    @apply badge loss-bg;
-  }
-  
+
+  /* ── Badge ───────────────────────────────────── */
+  .badge        { @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold; }
+  .badge-profit { @apply badge profit-bg; }
+  .badge-loss   { @apply badge loss-bg; }
+
+  /* ── Skeleton ────────────────────────────────── */
   .skeleton {
-    @apply bg-dark-tertiary rounded animate-pulse;
+    @apply rounded-xl animate-pulse;
+    background-color: rgb(var(--bg-tertiary));
   }
-  
-  .shimmer {
-    @apply bg-gradient-to-r from-dark-tertiary via-dark-elevated to-dark-tertiary bg-[length:200%_100%] animate-shimmer;
-  }
-  
-  .divider {
-    @apply h-px bg-dark-tertiary;
-  }
-  
-  .page-header {
-    @apply flex items-center justify-between mb-8;
-  }
-  
-  .page-title {
-    @apply text-h1 font-bold text-text-primary;
-  }
-  
-  .section-title {
-    @apply text-h3 font-semibold text-text-primary mb-4;
-  }
-  
+
+  /* ── Misc helpers ────────────────────────────── */
+  .divider      { @apply h-px; background-color: rgb(var(--border)); }
+  .page-header  { @apply flex items-center justify-between mb-8; }
+  .page-title   { @apply text-h1 font-bold; color: rgb(var(--text-primary)); }
+  .section-title { @apply text-h3 font-semibold mb-4; color: rgb(var(--text-primary)); }
+
   .crypto-icon {
-    @apply w-8 h-8 rounded-full bg-dark-tertiary flex items-center justify-center font-mono text-xs font-medium text-text-secondary;
+    @apply w-8 h-8 rounded-full flex items-center justify-center font-mono text-xs font-semibold;
+    background-color: rgb(var(--accent-light));
+    color: rgb(var(--accent-primary));
+    border: 1px solid rgba(0, 176, 80, 0.20);
   }
-  
+
   .crypto-icon-lg {
-    @apply w-10 h-10 rounded-full bg-dark-tertiary flex items-center justify-center font-mono text-sm font-medium text-text-secondary;
+    @apply w-10 h-10 rounded-full flex items-center justify-center font-mono text-sm font-semibold;
+    background-color: rgb(var(--accent-light));
+    color: rgb(var(--accent-primary));
+    border: 1px solid rgba(0, 176, 80, 0.20);
+  }
+
+  /* ── Groww-style stat pill ───────────────────── */
+  .stat-pill {
+    @apply inline-flex items-center gap-1 text-xs font-semibold px-2 py-1 rounded-full;
+  }
+  .stat-pill-profit {
+    @apply stat-pill profit-bg;
+  }
+  .stat-pill-loss {
+    @apply stat-pill loss-bg;
   }
 }
 
 @layer utilities {
-  .text-balance {
-    text-wrap: balance;
-  }
-  
+  .text-balance { text-wrap: balance; }
+
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: #374151 transparent;
+    scrollbar-color: rgb(var(--border)) transparent;
   }
-  
-  .scrollbar-thin::-webkit-scrollbar {
-    width: 6px;
-    height: 6px;
-  }
-  
-  .scrollbar-thin::-webkit-scrollbar-track {
-    background: transparent;
-  }
-  
+  .scrollbar-thin::-webkit-scrollbar       { width: 5px; height: 5px; }
+  .scrollbar-thin::-webkit-scrollbar-track { background: transparent; }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background: #374151;
+    background: rgb(var(--border));
     border-radius: 3px;
   }
-  
   .scrollbar-thin::-webkit-scrollbar-thumb:hover {
-    background: #4B5563;
+    background: rgb(var(--border-hover));
   }
 }
 
+/* Remove number spinner */
 input::-webkit-outer-spin-button,
 input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-
 input[type=number] {
   -moz-appearance: textfield;
 }

@@ -116,7 +116,7 @@ const MarketPage = () => {
     useEffect(() => {
         if (!symbol || chartData.length === 0) return;
 
-        const ws = new WebSocket("wss://fstream.binance.com/ws");
+        const ws = new WebSocket("wss://fstream.binance.com/market/ws");
 
         ws.onopen = () => {
             const subscribeMsg = {
@@ -246,12 +246,12 @@ const MarketPage = () => {
                             data={chartData}
                             height={550}
                             showToolbar={true}
-                            showVolume={true}
+                            showVolume={false}
                             defaultTimeframe={timeframe}
                             onTimeframeChange={handleTimeframeChange}
                         />
                     ) : (
-                        <div className="bg-[#0D1117] rounded-xl border border-[#1F2937] h-[550px] flex items-center justify-center">
+                        <div className="bg-background-tertiary rounded-xl border border-border h-[550px] flex items-center justify-center">
                             <div className="flex flex-col items-center gap-3">
                                 <div className="w-8 h-8 border-2 border-accent-primary/30 border-t-accent-primary rounded-full animate-spin" />
                                 <span className="text-text-muted text-sm">Loading chart...</span>
@@ -283,7 +283,7 @@ const MarketPage = () => {
                 
                 <div className="space-y-4">
                     <div className="card sticky top-6">
-                        <div className="flex items-center gap-2 p-1 bg-dark-tertiary rounded-lg mb-6">
+                        <div className="flex items-center gap-2 p-1 bg-background-tertiary rounded-xl mb-6">
                             <button
                                 onClick={() => setPositionType("call")}
                                 className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-lg font-semibold transition-all ${
@@ -327,7 +327,7 @@ const MarketPage = () => {
                                     <button
                                         onClick={() => setShowLeverageSlider(!showLeverageSlider)}
                                         className={`px-3 py-1 rounded-lg text-sm font-bold transition-colors ${
-                                            leverage > 1 ? "bg-warning/20 text-warning" : "bg-dark-tertiary text-text-primary"
+                                            leverage > 1 ? "bg-warning/20 text-warning" : "bg-background-tertiary text-text-primary"
                                         }`}
                                     >
                                         {leverage}x
@@ -335,7 +335,7 @@ const MarketPage = () => {
                                 </div>
                                 
                                 {showLeverageSlider && (
-                                    <div className="p-3 bg-dark-tertiary rounded-lg space-y-3">
+                                    <div className="p-3 bg-background-tertiary rounded-xl space-y-3">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             {leverageOptions.map((lev) => (
                                                 <button
@@ -344,7 +344,7 @@ const MarketPage = () => {
                                                     className={`px-3 py-1.5 rounded text-sm font-medium transition-colors ${
                                                         leverage === lev
                                                             ? "bg-accent-primary text-white"
-                                                            : "bg-dark-elevated text-text-muted hover:text-text-primary"
+                                                            : "bg-background-secondary text-text-muted hover:text-text-primary"
                                                     }`}
                                                 >
                                                     {lev}x
@@ -365,8 +365,8 @@ const MarketPage = () => {
 
                             <div>
                                 <label className="text-sm text-text-muted mb-2 block">Margin ({crypto})</label>
-                                <div className="flex items-center bg-dark-tertiary rounded-lg overflow-hidden">
-                                    <button onClick={decrementQuantity} className="px-4 py-3 text-xl text-text-secondary hover:text-text-primary hover:bg-dark-elevated transition-colors">
+                                <div className="flex items-center bg-background-tertiary rounded-xl overflow-hidden border border-border">
+                                    <button onClick={decrementQuantity} className="px-4 py-3 text-xl text-text-secondary hover:text-text-primary hover:bg-background-secondary transition-colors">
                                         −
                                     </button>
                                     <input
@@ -380,7 +380,7 @@ const MarketPage = () => {
                                         }}
                                         className="flex-1 bg-transparent text-center text-text-primary text-lg font-mono outline-none py-3"
                                     />
-                                    <button onClick={incrementQuantity} className="px-4 py-3 text-xl text-text-secondary hover:text-text-primary hover:bg-dark-elevated transition-colors">
+                                    <button onClick={incrementQuantity} className="px-4 py-3 text-xl text-text-secondary hover:text-text-primary hover:bg-background-secondary transition-colors">
                                         +
                                     </button>
                                 </div>
@@ -397,7 +397,7 @@ const MarketPage = () => {
                             </button>
 
                             {showAdvanced && (
-                                <div className="p-4 bg-dark-tertiary rounded-lg space-y-4">
+                                <div className="p-4 bg-background-tertiary rounded-xl space-y-4">
                                     <div>
                                         <div className="flex items-center justify-between mb-2">
                                             <label className="text-sm text-profit">Take Profit %</label>
@@ -409,7 +409,7 @@ const MarketPage = () => {
                                             min="0.1"
                                             value={takeProfitPercent}
                                             onChange={(e) => setTakeProfitPercent(e.target.value === "" ? "" : parseFloat(e.target.value))}
-                                            className="w-full bg-dark-elevated rounded-lg px-4 py-2.5 text-text-primary font-mono outline-none focus:ring-2 focus:ring-profit/50"
+                                            className="w-full bg-background-secondary border border-border rounded-xl px-4 py-2.5 text-text-primary font-mono outline-none focus:ring-2 focus:ring-profit/50"
                                         />
                                     </div>
 
@@ -424,11 +424,11 @@ const MarketPage = () => {
                                             min="0.1"
                                             value={stopLossPercent}
                                             onChange={(e) => setStopLossPercent(e.target.value === "" ? "" : parseFloat(e.target.value))}
-                                            className="w-full bg-dark-elevated rounded-lg px-4 py-2.5 text-text-primary font-mono outline-none focus:ring-2 focus:ring-loss/50"
+                                            className="w-full bg-background-secondary border border-border rounded-xl px-4 py-2.5 text-text-primary font-mono outline-none focus:ring-2 focus:ring-loss/50"
                                         />
                                     </div>
 
-                                    <div className="flex items-center justify-between pt-2 border-t border-[#374151]">
+                                    <div className="flex items-center justify-between pt-2 border-t border-border">
                                         <span className="text-xs text-text-muted">Risk/Reward Ratio</span>
                                         <span className={`text-sm font-bold ${parseFloat(riskReward) >= 2 ? "text-profit" : parseFloat(riskReward) >= 1 ? "text-warning" : "text-loss"}`}>
                                             1:{riskReward}
@@ -437,7 +437,7 @@ const MarketPage = () => {
                                 </div>
                             )}
 
-                            <div className="p-4 bg-dark-tertiary rounded-lg space-y-3">
+                            <div className="p-4 bg-background-tertiary rounded-xl space-y-3">
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="text-text-muted">Position Size</span>
                                     <span className="price-sm text-text-primary">${formatPrice(positionSize)}</span>
@@ -450,7 +450,7 @@ const MarketPage = () => {
                                     <span className="text-text-muted">Available Balance</span>
                                     <span className="price-sm text-text-primary">${formatPrice(walletBalance)}</span>
                                 </div>
-                                <div className="h-px bg-[#374151]" />
+                                <div className="h-px bg-border" />
                                 <div className="flex items-center justify-between text-sm">
                                     <span className="text-profit">Potential Profit</span>
                                     <span className="price-sm text-profit">+${formatPrice(potentialProfit)}</span>
@@ -498,36 +498,39 @@ const MarketPage = () => {
                             </button>
                         </div>
                     </div>
+                </div>
+            </div>
 
-                    <div className="card bg-gradient-to-br from-accent-primary/10 to-dark-secondary border-accent-primary/20">
-                        <div className="flex items-start gap-3">
-                            <div className="w-10 h-10 rounded-lg bg-accent-primary/20 flex items-center justify-center flex-shrink-0">
-                                <svg className="w-5 h-5 text-accent-primary" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                </svg>
-                            </div>
-                            <div>
-                                <h3 className="font-semibold text-text-primary mb-1">Paper Trading</h3>
-                                <p className="text-sm text-text-secondary">Practice futures trading with virtual funds. No real money involved.</p>
-                            </div>
+            {/* Bottom info row */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-2">
+                <div className="card" style={{ background: "rgb(var(--accent-light))", border: "1px solid rgba(0,176,80,0.2)" }}>
+                    <div className="flex items-start gap-3">
+                        <div className="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style={{ background: "rgba(0,176,80,0.15)" }}>
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" style={{ color: "rgb(var(--accent-primary))" }}>
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 className="font-semibold mb-1" style={{ color: "rgb(var(--text-primary))" }}>Paper Trading</h3>
+                            <p className="text-sm" style={{ color: "rgb(var(--text-secondary))" }}>Practice futures trading with virtual funds. No real money involved.</p>
                         </div>
                     </div>
+                </div>
 
-                    <div className="card">
-                        <h3 className="text-sm font-semibold text-text-primary mb-3">Position Guide</h3>
-                        <div className="space-y-3 text-xs text-text-muted">
-                            <div className="flex items-start gap-2">
-                                <div className="w-2 h-2 rounded-full bg-profit mt-1.5 flex-shrink-0" />
-                                <p><span className="text-profit font-medium">Call:</span> Profit when price goes up. Bullish position.</p>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <div className="w-2 h-2 rounded-full bg-loss mt-1.5 flex-shrink-0" />
-                                <p><span className="text-loss font-medium">Put:</span> Profit when price goes down. Bearish position.</p>
-                            </div>
-                            <div className="flex items-start gap-2">
-                                <div className="w-2 h-2 rounded-full bg-warning mt-1.5 flex-shrink-0" />
-                                <p><span className="text-warning font-medium">Leverage:</span> Amplifies gains and losses. Use with caution.</p>
-                            </div>
+                <div className="card">
+                    <h3 className="text-sm font-semibold mb-3" style={{ color: "rgb(var(--text-primary))" }}>Position Guide</h3>
+                    <div className="flex flex-wrap gap-4 text-xs" style={{ color: "rgb(var(--text-muted))" }}>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-profit flex-shrink-0" />
+                            <p><span className="text-profit font-semibold">Call:</span> Profit when price goes up.</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-loss flex-shrink-0" />
+                            <p><span className="text-loss font-semibold">Put:</span> Profit when price goes down.</p>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="w-2 h-2 rounded-full bg-warning flex-shrink-0" />
+                            <p><span className="text-warning font-semibold">Leverage:</span> Amplifies gains and losses.</p>
                         </div>
                     </div>
                 </div>

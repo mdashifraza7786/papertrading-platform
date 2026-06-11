@@ -10,6 +10,12 @@ export async function POST(request: Request) {
     try {
         const { id, priceat } = await request.json();
         const uniqueid = Number(id);
+        const price = Number(priceat);
+
+        if (isNaN(price) || price <= 0) {
+            return NextResponse.json({ error: "Invalid price." });
+        }
+
         const sessions = await auth();
         const email = sessions?.user?.email;
 
@@ -37,7 +43,7 @@ export async function POST(request: Request) {
             return NextResponse.json({ error: "Invalid quantity value." });
         }
 
-        const amountToUpdate = priceat * quantityValue;
+        const amountToUpdate = price * quantityValue;
 
         const deletedHolding = await HoldingModel.findOneAndDelete({ uniqueid }).session(session);
 

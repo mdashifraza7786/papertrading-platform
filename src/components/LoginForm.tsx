@@ -92,7 +92,7 @@ const LoginForm = () => {
                     )}
                 </button>
             </form>
-            <ToastContainer position="bottom-right" theme="dark" />
+            <ToastContainer position="bottom-right" theme="light" />
         </>
     );
 };

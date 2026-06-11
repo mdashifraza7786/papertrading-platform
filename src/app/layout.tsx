@@ -3,8 +3,8 @@ import "./globals.css";
 import { auth } from "@/auth";
 
 export const metadata: Metadata = {
-  title: "PaperTrading",
-  description: "A Trading Platform for Learn",
+  title: "PaperTrade — Practice Crypto Trading",
+  description: "Paper trading platform to practice crypto trading with virtual funds",
 };
 
 export default async function RootLayout({
@@ -15,8 +15,8 @@ export default async function RootLayout({
   const session = await auth();
   
   return (
-    <html lang="en" className="dark">
-      <body className="min-h-screen bg-dark-primary">
+    <html lang="en">
+      <body className="min-h-screen bg-background-primary">
         {children}
       </body>
     </html>
